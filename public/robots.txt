@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://maztard.github.io/MazenGarden/sitemap-index.xml

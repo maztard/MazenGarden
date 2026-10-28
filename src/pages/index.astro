@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoCard from '../components/PhotoCard.astro';
 import PostCard from '../components/PostCard.astro';
 import ProjectsWindow from '../components/ProjectsWindow.astro';
-import { HOME_TITLE } from '../consts';
+import { HOME_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getPublishedPosts } from '../utils/posts';
 import { withBase } from '../utils/url';
 import sky1 from '../assets/images/sky1.jpeg';
@@ -14,7 +14,7 @@ import random1 from '../assets/images/random1.jpeg';
 const posts = (await getPublishedPosts()).slice(0, 3);
 ---
 
-<BaseLayout title={HOME_TITLE}>
+<BaseLayout title={HOME_TITLE} description={SITE_DESCRIPTION}>
   <div class="container">
     <section class="hero">
       <h1 class="hero__title">
@@ -121,7 +121,7 @@ const posts = (await getPublishedPosts()).slice(0, 3);
         </li>
       </ul>
     </section>
-
-    <ProjectsWindow />
   </div>
+
+  <ProjectsWindow />
 </BaseLayout>
