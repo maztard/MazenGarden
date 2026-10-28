@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoCard from '../components/PhotoCard.astro';
 import PostCard from '../components/PostCard.astro';
+import ProjectsWindow from '../components/ProjectsWindow.astro';
 import { HOME_TITLE } from '../consts';
 import { getPublishedPosts } from '../utils/posts';
 import { withBase } from '../utils/url';
@@ -120,5 +121,7 @@ const posts = (await getPublishedPosts()).slice(0, 3);
         </li>
       </ul>
     </section>
+
+    <ProjectsWindow />
   </div>
 </BaseLayout>
