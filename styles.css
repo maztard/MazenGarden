@@ -32,3 +32,81 @@
   margin-bottom: 20px;
   text-align: justify; /* Adds straight vertical alignment on both sides */
 }
+
+
+.randomPicsSpan {
+  font-family: 'Dotemp', sans-serif;
+  font-style: italic;
+  font-weight: 800; 
+  margin-left: 50px;
+  font-size: 50px;
+  text-decoration: underline;
+}
+
+        .Imgscard {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            overflow: hidden;
+            font-family: "Geist Pixel", sans-serif;
+
+        }
+        .Imgscard img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .content {
+            padding: 16px;
+        }
+        .content h2 {
+            margin: 0 0 8px 0;
+            font-size: 20px;
+            color: #333;
+        }
+        .content p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+.programDiv {
+  background-color: #c0c0c0;
+  width: 40%;
+  height: 200px;
+  margin-top: 20px;
+    filter: drop-shadow(8px 1px 4px rgba(0, 0, 0, 0.2));
+}
+
+.close-btn {
+  background-color: #c0c0c0;
+  color: #000000;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  border-top: 1.5px solid #ffffff;
+  border-left: 1.5px solid #ffffff;
+  border-right: 1.5px solid #000000;
+  border-bottom: 1.5px solid #000000;  
+  box-shadow: inset -1px -1px 0px #808080, inset 1px 1px 0px #dfdfdf;
+}
+
+.close-btn:active {
+  border-top: 1.5px solid #000000;
+  border-left: 1.5px solid #000000;
+  border-right: 1.5px solid #ffffff;
+  border-bottom: 1.5px solid #ffffff;
+  box-shadow: inset 1px 1px 0px #808080, inset -1px -1px 0px #dfdfdf;
+  padding-top: 2px;
+  padding-left: 2px;
+}
