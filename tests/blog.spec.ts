@@ -30,6 +30,11 @@ test('the post page renders its title, date, lede, body, and back links', async 
   await expect(headings).toHaveCount(1);
   await expect(headings).toHaveText('Hello, world');
 
+  const nav = page.getByRole('navigation', { name: 'Primary' });
+  const writingLink = nav.getByRole('link', { name: 'Writing' });
+  await expect(writingLink).toHaveAttribute('aria-current', 'location');
+  await expect(writingLink).not.toHaveAttribute('aria-current', 'page');
+
   await expect(page.locator('.post__meta time')).toHaveText('October 28, 2026');
   await expect(page.locator('.post__lede')).toHaveText('A first note from the garden.');
   await expect(page.locator('.prose')).toContainText('Welcome to my corner of the internet');

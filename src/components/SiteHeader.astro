@@ -4,6 +4,7 @@ import { withBase } from '../utils/url';
 const base = import.meta.env.BASE_URL;
 const path = Astro.url.pathname;
 const isHome = path === base;
+const isBlogIndex = path === `${base}blog/`;
 const isWriting = path.startsWith(`${base}blog/`);
 ---
 
@@ -16,7 +17,10 @@ const isWriting = path.startsWith(`${base}blog/`);
       <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>
         Home
       </a>
-      <a href={withBase('/blog/')} aria-current={isWriting ? 'page' : undefined}>
+      <a
+        href={withBase('/blog/')}
+        aria-current={isBlogIndex ? 'page' : isWriting ? 'location' : undefined}
+      >
         Writing
       </a>
       <a href={withBase('/rss.xml')}>RSS</a>

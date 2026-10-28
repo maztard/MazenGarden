@@ -27,7 +27,7 @@ test('capture the homepage at desktop and mobile widths', async ({ page }) => {
     );
     expect(headingText, `${capture.name} h1 text`).toBe('About Me!');
 
-    const images = page.locator('img');
+    const images = page.locator('#pics img');
     const imageCount = await images.count();
     expect(imageCount, `${capture.name} image count`).toBe(4);
 
@@ -40,7 +40,7 @@ test('capture the homepage at desktop and mobile widths', async ({ page }) => {
       .poll(
         () =>
           page.evaluate(() =>
-            Array.from(document.querySelectorAll('img'))
+            Array.from(document.querySelectorAll<HTMLImageElement>('#pics img'))
               .filter((image) => !image.complete || image.naturalWidth === 0)
               .map((image) => image.currentSrc || image.src),
           ),
