@@ -1,0 +1,18 @@
+---
+import { Font } from 'astro:assets';
+import { HOME_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{HOME_TITLE}</title>
+    <Font cssVariable="--font-dotemp" preload />
+    <Font cssVariable="--font-geist-pixel" preload />
+  </head>
+  <body>
+    <h1>MazenGarden</h1>
+  </body>
+</html>
