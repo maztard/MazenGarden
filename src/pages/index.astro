@@ -1,11 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoCard from '../components/PhotoCard.astro';
+import PostCard from '../components/PostCard.astro';
 import { HOME_TITLE } from '../consts';
+import { getPublishedPosts } from '../utils/posts';
+import { withBase } from '../utils/url';
 import sky1 from '../assets/images/sky1.jpeg';
 import sky2 from '../assets/images/sky2.jpeg';
 import dorm1 from '../assets/images/dorm1.jpeg';
 import random1 from '../assets/images/random1.jpeg';
+
+const posts = (await getPublishedPosts()).slice(0, 3);
 ---
 
 <BaseLayout title={HOME_TITLE}>
@@ -50,6 +55,26 @@ import random1 from '../assets/images/random1.jpeg';
         </p>
       </div>
     </section>
+
+    {posts.length > 0 && (
+      <section class="section" aria-labelledby="writing-title">
+        <div class="section__heading">
+          <h2 class="section__title" id="writing-title">
+            Latest writing
+          </h2>
+          <a class="section__more" href={withBase('/blog/')}>
+            All posts →
+          </a>
+        </div>
+        <ul class="post-list">
+          {posts.map((post) => (
+            <li>
+              <PostCard post={post} headingLevel="h3" />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <section class="section" id="pics" aria-labelledby="pics-title">
       <h2 class="section__title" id="pics-title">

@@ -1,0 +1,35 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { BlogPost } from '../utils/posts';
+import { formatDate } from '../utils/date';
+import { withBase } from '../utils/url';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<BaseLayout title={`${post.data.title} · MazenGarden`} description={post.data.description}>
+  <article class="post container">
+    <a class="post__back" href={withBase('/blog/')}>
+      ← All writing
+    </a>
+    <header class="post__header">
+      <h1 class="post__title">{post.data.title}</h1>
+      <p class="post__meta">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+      </p>
+    </header>
+    <p class="post__lede">{post.data.description}</p>
+    <div class="prose">
+      <slot />
+    </div>
+    <footer class="post__footer">
+      <a class="post__back" href={withBase('/blog/')}>
+        ← All writing
+      </a>
+    </footer>
+  </article>
+</BaseLayout>

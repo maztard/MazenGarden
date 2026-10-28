@@ -1,0 +1,23 @@
+---
+import type { BlogPost } from '../utils/posts';
+import { postUrl } from '../utils/posts';
+import { formatDate } from '../utils/date';
+
+interface Props {
+  post: BlogPost;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel = 'h2' } = Astro.props;
+const Heading = headingLevel;
+---
+
+<article class="post-card">
+  <p class="post-card__meta">
+    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+  </p>
+  <Heading class="post-card__title">
+    <a href={postUrl(post)}>{post.data.title}</a>
+  </Heading>
+  <p class="post-card__description">{post.data.description}</p>
+</article>
