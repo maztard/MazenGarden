@@ -4,7 +4,7 @@ test('homepage responds at the production base path', async ({ page }) => {
   const response = await page.goto('./');
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/Mazen Ragab/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('MazenGarden');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/About\s+Me!/);
 });
 
 test('the built page has no Google Fonts requests', async ({ page }) => {
