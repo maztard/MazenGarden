@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Pixel&display=swap'); 
+
+@font-face {
+  font-family: 'Dotemp';
+  src: url('fonts/Dotemp-8bit.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.aboutMeSpan {
+
+  font-size: 200px;
+}
+
+.nameSpan {
+  font-family: 'Dotemp', sans-serif;
+  font-style: italic;
+  font-weight: 800; 
+  margin-left: 50px;
+  font-size: 50px;
+  text-decoration: underline;
+}
+
+.theParagraph {
+  font-family: "Geist Pixel", sans-serif;
+  margin-left: 50px;
+  width: 80%;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: justify; /* Adds straight vertical alignment on both sides */
+}
