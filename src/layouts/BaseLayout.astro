@@ -1,0 +1,49 @@
+---
+import { Font } from 'astro:assets';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { withBase } from '../utils/url';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { title = SITE_TITLE, description = SITE_DESCRIPTION, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="MazenGarden RSS"
+      href={withBase('/rss.xml')}
+    />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <Font cssVariable="--font-dotemp" preload />
+    <Font cssVariable="--font-geist-pixel" preload />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <SiteHeader />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

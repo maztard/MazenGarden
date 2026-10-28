@@ -1,0 +1,139 @@
+:root {
+  --color-text: #1a1a1a;
+  --color-muted: #555;
+  --color-accent: #a52a2a;
+  --color-link: #0000ee;
+  --color-window: #c0c0c0;
+  --color-window-bar: #06068e;
+  --color-card: #fff;
+  --font-body: var(--font-geist-pixel), system-ui, sans-serif;
+  --font-display: var(--font-dotemp), 'Courier New', monospace;
+  --container: 75rem;
+  --gutter: clamp(1.25rem, 4vw, 3.125rem);
+  --section-space: clamp(3rem, 8vw, 6rem);
+  --radius: 0.5rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #fff;
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+main {
+  flex: 1;
+  padding-bottom: var(--section-space);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+a {
+  color: var(--color-link);
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.container {
+  width: min(calc(100% - 2 * var(--gutter)), var(--container));
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-accent);
+  color: #fff;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus {
+  color: #fff;
+  transform: none;
+}
+
+.site-header {
+  padding-block: 0.75rem;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem 1.5rem;
+}
+
+.site-header__brand {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.site-nav a {
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+.site-nav [aria-current='page'] {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2rem;
+}
+
+.site-footer {
+  padding-block: 1.5rem;
+  border-top: 2px solid var(--color-accent);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.accent {
+  color: var(--color-accent);
+}

@@ -1,0 +1,25 @@
+---
+import { withBase } from '../utils/url';
+
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+const isHome = path === base;
+const isWriting = path.startsWith(`${base}blog/`);
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href={withBase('/')}>
+      MazenGarden
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href={withBase('/')} aria-current={isHome ? 'page' : undefined}>
+        Home
+      </a>
+      <a href={withBase('/blog/')} aria-current={isWriting ? 'page' : undefined}>
+        Writing
+      </a>
+      <a href={withBase('/rss.xml')}>RSS</a>
+    </nav>
+  </div>
+</header>
