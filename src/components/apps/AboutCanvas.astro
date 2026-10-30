@@ -1,0 +1,177 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const skills = ['Tech', 'AI', 'Marketing', 'Psychology', 'Web'];
+---
+
+<section class:list={['about-canvas', className]} aria-label="About Mazen Ragab">
+  <div class="about-canvas__hero">
+    <h1 class="about-canvas__title">
+      <span class="about-canvas__title-line1">About</span>
+      <span class="about-canvas__title-line2">Me!</span>
+    </h1>
+    <p class="about-canvas__name">
+      Mazen Ragab aka <span class="about-canvas__alias">(Maztardoo)</span>
+    </p>
+  </div>
+
+  <div class="about-canvas__bio">
+    <p>
+      Hi, you already know my name! I am currently a G12 student at New Cairo STEM School. Even
+      though I am G12, I am 16 years old, which is kinda dope ngl cuz I feel superior lol.
+    </p>
+    <p>
+      A fun fact about me is that I am trying to be a Polymath. I am into multiple stuff. I am into
+      Tech, Marketing, Psychology and Human Behaviour, Business, and honestly a lot of other random
+      things that I find interesting. I really enjoy learning about things outside of what I am
+      supposed to know, especially when I can connect different fields together and use them to
+      create something.
+    </p>
+    <p>
+      I don't really want to limit myself to one specific field or career. I want to explore as much
+      as I can, build things, understand people, learn how businesses work, and develop skills that
+      complement each other. I think the most interesting ideas usually happen when you combine
+      knowledge from completely different areas.
+    </p>
+    <p>
+      Outside of academics, I am also really into building projects and experimenting with ideas. I
+      enjoy taking an idea that sounds stupid at first and trying to turn it into something real. I
+      am especially interested in AI, entrepreneurship, and using technology to solve actual
+      problems.
+    </p>
+    <p>
+      Overall, I would say I am just extremely curious. I like going down random rabbit holes,
+      learning things that have absolutely nothing to do with school, and then somehow finding a way
+      to connect them back to something useful. My goal is basically to become the type of person
+      who can walk into almost any conversation and have something interesting to contribute.
+    </p>
+  </div>
+
+  <div class="about-canvas__section" aria-labelledby="about-skills-title">
+    <h2 class="about-canvas__section-title" id="about-skills-title">
+      SKILLS
+    </h2>
+    <div class="about-canvas__badges" role="list" aria-label="Skills">
+      {skills.map((skill) => (
+        <span class="about-canvas__badge" role="listitem">
+          {skill}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <div class="about-canvas__section" aria-labelledby="about-education-title">
+    <h2 class="about-canvas__section-title" id="about-education-title">
+      EDUCATION
+    </h2>
+    <p class="about-canvas__education">New Cairo STEM School (G12)</p>
+  </div>
+</section>
+
+<style>
+  .about-canvas {
+    max-width: 48rem;
+    color: var(--color-text, #1a1a1a);
+    font-family: var(--font-body, system-ui, sans-serif);
+  }
+
+  .about-canvas__hero {
+    margin-bottom: 2rem;
+  }
+
+  .about-canvas__title {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-display, 'Dotemp-8bit', 'Courier New', monospace);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  .about-canvas__title-line1 {
+    font-size: clamp(3.5rem, 11vw, 6.5rem);
+    color: #1a1a1a;
+  }
+
+  .about-canvas__title-line2 {
+    font-size: clamp(3.5rem, 11vw, 6.5rem);
+    color: var(--color-accent, #c02a2a);
+    margin-left: clamp(2rem, 8vw, 5rem);
+  }
+
+  .about-canvas__name {
+    margin: 1rem 0 0;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    font-style: italic;
+    font-weight: 700;
+    color: var(--color-accent, #a52a2a);
+  }
+
+  .about-canvas__alias {
+    font-weight: 800;
+  }
+
+  .about-canvas__bio {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #2b2b2b;
+  }
+
+  .about-canvas__bio p {
+    margin: 0;
+  }
+
+  .about-canvas__section {
+    margin-top: 2.5rem;
+  }
+
+  .about-canvas__section-title {
+    margin: 0 0 1rem;
+    font-family: var(--font-display, 'Dotemp-8bit', monospace);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+  }
+
+  .about-canvas__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .about-canvas__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    min-height: 4.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 9999px;
+    background: #f4f4f4;
+    color: #111;
+    border: 2px solid #1a1a1a;
+    box-shadow: 2px 2px 0 #000;
+    font-family: var(--font-display, monospace);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .about-canvas__education {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+  }
+</style>

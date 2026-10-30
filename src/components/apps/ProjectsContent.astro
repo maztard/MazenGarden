@@ -1,0 +1,287 @@
+---
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['projects-browser', className]}>
+  <!-- Retro browser window chrome with address bar -->
+  <div class="projects-browser__bar">
+    <div class="projects-browser__nav" aria-hidden="true">
+      <button type="button" class="browser-nav-btn" disabled aria-label="Back">
+        ◄
+      </button>
+      <button type="button" class="browser-nav-btn" disabled aria-label="Forward">
+        ►
+      </button>
+      <button type="button" class="browser-nav-btn" disabled aria-label="Stop">
+        ✕
+      </button>
+      <button type="button" class="browser-nav-btn" disabled aria-label="Refresh">
+        ↻
+      </button>
+    </div>
+    <div class="projects-browser__address">
+      <span class="projects-browser__address-label">Address</span>
+      <div class="projects-browser__address-field">
+        <PixelIcon name="computer" size={14} class="projects-browser__address-icon" />
+        <span class="projects-browser__address-url">https://portfolio.local/projects</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser viewport -->
+  <div class="projects-browser__viewport">
+    <div class="projects-browser__intro">
+      <h3 class="projects-browser__heading">Projects & Works</h3>
+      <p class="projects-browser__subheading">
+        Selected software builds, experiments, and active ventures.
+      </p>
+    </div>
+
+    <ul class="projects-directory" role="list">
+      <li class="projects-directory__item">
+        <div class="project-entry">
+          <div class="project-entry__icon" aria-hidden="true">
+            <PixelIcon name="projects" size={24} />
+          </div>
+          <div class="project-entry__details">
+            <a
+              href="https://emadeats.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="project-entry__link"
+            >
+              <span class="project-entry__title">EmadEats Project</span>
+              <span class="project-entry__arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+            <p class="project-entry__desc">
+              Food discovery, restaurant concepts, and culinary community platform.
+            </p>
+          </div>
+        </div>
+      </li>
+
+      <li class="projects-directory__item">
+        <div class="project-entry">
+          <div class="project-entry__icon" aria-hidden="true">
+            <PixelIcon name="folder" size={24} />
+          </div>
+          <div class="project-entry__details">
+            <div class="project-entry__title-static">
+              <span class="project-entry__title">BuggyEyes</span>
+            </div>
+            <p class="project-entry__desc">
+              Computer vision, perceptual computing, and interactive experiments.
+            </p>
+          </div>
+        </div>
+      </li>
+
+      <li class="projects-directory__item">
+        <div class="project-entry">
+          <div class="project-entry__icon" aria-hidden="true">
+            <PixelIcon name="folder" size={24} />
+          </div>
+          <div class="project-entry__details">
+            <div class="project-entry__title-static">
+              <span class="project-entry__title">Sudany</span>
+            </div>
+            <p class="project-entry__desc">
+              Cultural archives, community identity, and regional tech storytelling.
+            </p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<style>
+  .projects-browser {
+    display: flex;
+    flex-direction: column;
+    background: #c0c0c0;
+    font-family: var(--font-body, system-ui, sans-serif);
+  }
+
+  .projects-browser__bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.35rem 0.5rem 0.5rem;
+    background: #c0c0c0;
+    border-bottom: 2px solid #808080;
+  }
+
+  .projects-browser__nav {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .browser-nav-btn {
+    width: 24px;
+    height: 22px;
+    padding: 0;
+    font-size: 11px;
+    font-weight: bold;
+    background: #c0c0c0;
+    color: #555;
+    border-top: 1.5px solid #fff;
+    border-left: 1.5px solid #fff;
+    border-right: 1.5px solid #404040;
+    border-bottom: 1.5px solid #404040;
+    cursor: default;
+  }
+
+  .projects-browser__address {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .projects-browser__address-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #222;
+  }
+
+  .projects-browser__address-field {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0.2rem 0.5rem;
+    background: #ffffff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow: inset 1px 1px 0 #000;
+  }
+
+  .projects-browser__address-icon {
+    flex-shrink: 0;
+    color: #444;
+  }
+
+  .projects-browser__address-url {
+    font-family: var(--font-display, monospace);
+    font-size: 0.85rem;
+    color: #1a1a1a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .projects-browser__viewport {
+    padding: 1rem;
+    background: #ffffff;
+    min-height: 240px;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    margin: 0.5rem;
+    box-shadow: inset 1px 1px 0 #000;
+  }
+
+  .projects-browser__intro {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dotted #808080;
+  }
+
+  .projects-browser__heading {
+    margin: 0;
+    font-family: var(--font-display, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .projects-browser__subheading {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .projects-directory {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .projects-directory__item {
+    padding: 0.5rem;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+  }
+
+  .project-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .project-entry__icon {
+    flex-shrink: 0;
+    padding-top: 2px;
+    color: #333;
+  }
+
+  .project-entry__details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .project-entry__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-display, monospace);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-link, #0000ee);
+    text-decoration: underline;
+  }
+
+  .project-entry__link:hover {
+    color: var(--color-accent, #a52a2a);
+  }
+
+  .project-entry__title-static {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-display, monospace);
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .project-entry__title {
+    word-break: break-word;
+  }
+
+  .project-entry__arrow {
+    font-size: 0.9rem;
+  }
+
+  .project-entry__desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #555;
+  }
+</style>

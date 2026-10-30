@@ -1,0 +1,298 @@
+---
+import { render } from 'astro:content';
+import { getPublishedPosts, postUrl } from '../../utils/posts';
+import { formatDate } from '../../utils/date';
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  initialSlug?: string;
+  class?: string;
+}
+
+const { initialSlug, class: className } = Astro.props;
+const posts = await getPublishedPosts();
+
+// Pre-render article bodies so clicking can display articles instantly
+const renderedPosts = await Promise.all(
+  posts.map(async (post) => {
+    let Content: any;
+    if (typeof (post as any).render === 'function') {
+      const res = await (post as any).render();
+      Content = res.Content;
+    } else {
+      const res = await render(post);
+      Content = res.Content;
+    }
+    return {
+      post,
+      Content,
+    };
+  }),
+);
+
+const hasActivePost = Boolean(initialSlug && posts.some((p) => p.id === initialSlug));
+---
+
+<div class:list={['writing-content', className]}>
+  <!-- Post List View -->
+  <div class="writing-list-view" data-writing-list hidden={hasActivePost}>
+    <div class="writing-list-bar">
+      <div class="writing-list-bar__left">
+        <PixelIcon name="writing" size={16} />
+        <span class="writing-list-bar__title">Articles Index</span>
+      </div>
+      <span class="writing-list-bar__count">{posts.length} article(s)</span>
+    </div>
+
+    {posts.length === 0 ? (
+      <div class="writing-empty">
+        <p>No articles published yet. Check back soon!</p>
+      </div>
+    ) : (
+      <ul class="writing-items" role="list">
+        {posts.map((post) => (
+          <li class="writing-item">
+            <a href={postUrl(post)} class="writing-item__link" data-writing-link={post.id}>
+              <div class="writing-item__header">
+                <span class="writing-item__title">{post.data.title}</span>
+                <time datetime={post.data.date.toISOString()} class="writing-item__date">
+                  {formatDate(post.data.date)}
+                </time>
+              </div>
+              {post.data.description && <p class="writing-item__desc">{post.data.description}</p>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+
+  <!-- Inline Article Readers -->
+  <div class="writing-posts-view">
+    {renderedPosts.map(({ post, Content }) => {
+      const isVisible = hasActivePost && post.id === initialSlug;
+      return (
+        <article
+          class="writing-post-reader"
+          data-writing-post={post.id}
+          hidden={!isVisible}
+          aria-labelledby={`article-title-${post.id}`}
+        >
+          <div class="writing-reader-nav">
+            <button
+              type="button"
+              class="writing-back-btn"
+              data-writing-back
+              aria-label="Back to articles"
+            >
+              ← Back to articles
+            </button>
+          </div>
+
+          <header class="writing-reader-header">
+            <h2 class="writing-reader-title" id={`article-title-${post.id}`}>
+              {post.data.title}
+            </h2>
+            <div class="writing-reader-meta">
+              <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+            </div>
+            {post.data.description && <p class="writing-reader-lead">{post.data.description}</p>}
+          </header>
+
+          <div class="writing-reader-body prose">
+            <Content />
+          </div>
+        </article>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .writing-content {
+    background: #c0c0c0;
+    font-family: var(--font-body, system-ui, sans-serif);
+    padding: 0.5rem;
+  }
+
+  .writing-list-view {
+    background: #ffffff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow: inset 1px 1px 0 #000;
+  }
+
+  .writing-list-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    background: #e0e0e0;
+    border-bottom: 1px solid #c0c0c0;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .writing-list-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .writing-list-bar__title {
+    font-family: var(--font-display, monospace);
+  }
+
+  .writing-list-bar__count {
+    color: #666;
+    font-size: 0.8rem;
+  }
+
+  .writing-empty {
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+  }
+
+  .writing-items {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .writing-item {
+    border-bottom: 1px solid #eeeeee;
+  }
+
+  .writing-item:last-child {
+    border-bottom: none;
+  }
+
+  .writing-item__link {
+    display: block;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #1a1a1a;
+    transition: background 0.1s ease;
+  }
+
+  .writing-item__link:hover {
+    background: #f5f5f5;
+  }
+
+  .writing-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .writing-item__title {
+    font-family: var(--font-display, monospace);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-link, #0000ee);
+  }
+
+  .writing-item__link:hover .writing-item__title {
+    color: var(--color-accent, #a52a2a);
+    text-decoration: underline;
+  }
+
+  .writing-item__date {
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+  }
+
+  .writing-item__desc {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .writing-post-reader {
+    background: #ffffff;
+    padding: 1.25rem;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow: inset 1px 1px 0 #000;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .writing-reader-nav {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dotted #c0c0c0;
+  }
+
+  .writing-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-family: var(--font-display, monospace);
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: #c0c0c0;
+    color: #000000;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    cursor: pointer;
+  }
+
+  .writing-back-btn:hover {
+    background: #dfdfdf;
+  }
+
+  .writing-back-btn:active {
+    border-top: 2px solid #404040;
+    border-left: 2px solid #404040;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    padding-top: calc(0.35rem + 1px);
+    padding-left: calc(0.75rem + 1px);
+  }
+
+  .writing-reader-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .writing-reader-title {
+    margin: 0;
+    font-family: var(--font-display, monospace);
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    line-height: 1.15;
+    color: #1a1a1a;
+  }
+
+  .writing-reader-meta {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .writing-reader-lead {
+    margin: 0.75rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #444;
+    font-style: italic;
+  }
+
+  .writing-reader-body {
+    border-top: 1px solid #eeeeee;
+    padding-top: 1rem;
+  }
+</style>

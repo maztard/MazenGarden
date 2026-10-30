@@ -1,0 +1,224 @@
+---
+import PixelIcon from '../ui/PixelIcon.astro';
+import { withBase } from '../../utils/url';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const site = Astro.site ?? 'https://maztard.github.io';
+const feedPath = withBase('/rss.xml');
+const feedUrl = new URL(feedPath, site).href;
+---
+
+<div class:list={['rss-content', className]}>
+  <div class="rss-card">
+    <div class="rss-card__header">
+      <PixelIcon name="rss" size={24} />
+      <h3 class="rss-card__title">RSS Feed Subscription</h3>
+    </div>
+
+    <p class="rss-card__desc">
+      Subscribe to receive automatic updates whenever a new article or personal update is posted.
+    </p>
+
+    <div class="rss-box">
+      <label for="rss-feed-input" class="rss-box__label">
+        Feed URL:
+      </label>
+      <div class="rss-box__group">
+        <input
+          id="rss-feed-input"
+          type="text"
+          readonly
+          value={feedUrl}
+          class="rss-box__input"
+          data-feed-input
+        />
+        <button
+          type="button"
+          class="rss-box__copy-btn"
+          data-copy-feed
+          data-feed-url={feedUrl}
+          aria-label="Copy RSS Feed URL"
+        >
+          Copy Feed URL
+        </button>
+      </div>
+    </div>
+
+    <div class="rss-instructions">
+      <h4 class="rss-instructions__title">How to Subscribe</h4>
+      <ol class="rss-instructions__list">
+        <li>
+          Click <strong>Copy Feed URL</strong> above to copy the link to your clipboard.
+        </li>
+        <li>Open your favorite RSS reader (e.g., NetNewsWire, Feedly, Feedbin, or Inoreader).</li>
+        <li>
+          Select <em>Add Feed</em> or <em>New Subscription</em> and paste the copied address.
+        </li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<script>
+  const copyButtons = document.querySelectorAll<HTMLButtonElement>('[data-copy-feed]');
+  copyButtons.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const url =
+        btn.getAttribute('data-feed-url') ||
+        (document.querySelector<HTMLInputElement>('[data-feed-input]')?.value ?? '');
+      if (!url) return;
+
+      try {
+        await navigator.clipboard.writeText(url);
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('is-copied');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('is-copied');
+        }, 2000);
+      } catch {
+        const input = document.querySelector<HTMLInputElement>('[data-feed-input]');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .rss-content {
+    background: #c0c0c0;
+    font-family: var(--font-body, system-ui, sans-serif);
+    padding: 0.5rem;
+  }
+
+  .rss-card {
+    background: #ffffff;
+    padding: 1.25rem;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow: inset 1px 1px 0 #000;
+  }
+
+  .rss-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dotted #808080;
+  }
+
+  .rss-card__title {
+    margin: 0;
+    font-family: var(--font-display, monospace);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .rss-card__desc {
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #444;
+  }
+
+  .rss-box {
+    margin-bottom: 1.5rem;
+  }
+
+  .rss-box__label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .rss-box__group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .rss-box__input {
+    flex: 1;
+    min-width: 220px;
+    padding: 0.4rem 0.6rem;
+    font-family: monospace;
+    font-size: 0.85rem;
+    background: #f9f9f9;
+    color: #222;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow: inset 1px 1px 0 #000;
+  }
+
+  .rss-box__copy-btn {
+    padding: 0.4rem 0.85rem;
+    font-family: var(--font-display, monospace);
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: #c0c0c0;
+    color: #000;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .rss-box__copy-btn:hover {
+    background: #dfdfdf;
+  }
+
+  .rss-box__copy-btn:active,
+  .rss-box__copy-btn.is-copied {
+    border-top: 2px solid #404040;
+    border-left: 2px solid #404040;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    background: #b0b0b0;
+    padding-top: calc(0.4rem + 1px);
+    padding-left: calc(0.85rem + 1px);
+  }
+
+  .rss-instructions {
+    padding: 0.85rem;
+    background: #f4f4f4;
+    border: 1px solid #d0d0d0;
+  }
+
+  .rss-instructions__title {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #222;
+  }
+
+  .rss-instructions__list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #555;
+  }
+
+  .rss-instructions__list li {
+    margin-bottom: 0.25rem;
+  }
+</style>

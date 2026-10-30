@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import mazenPhoto from '../../assets/images/me/mazen-1.jpeg';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<figure class:list={['meet-mazen', className]}>
+  <div class="meet-mazen__frame">
+    <Image
+      src={mazenPhoto}
+      alt="Mazen Ragab"
+      class="meet-mazen__image"
+      width={400}
+      height={400}
+      loading="eager"
+    />
+  </div>
+  <figcaption class="meet-mazen__caption">
+    <span class="meet-mazen__caption-text">Mazen Ragab</span>
+  </figcaption>
+</figure>
+
+<style>
+  .meet-mazen {
+    margin: 0;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #c0c0c0;
+  }
+
+  .meet-mazen__frame {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    padding: 3px;
+    background: #ffffff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #dfdfdf;
+    border-bottom: 2px solid #dfdfdf;
+    box-shadow:
+      inset 1px 1px 0 #000,
+      inset -1px -1px 0 #fff;
+  }
+
+  .meet-mazen__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+
+  .meet-mazen__caption {
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  .meet-mazen__caption-text {
+    display: inline-block;
+    padding: 0.2rem 0.75rem;
+    font-family: var(--font-display, monospace);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    background: #dfdfdf;
+    border: 1px solid #808080;
+  }
+</style>
