@@ -9,3 +9,4 @@ test-results/
 !.env.example
 Thumbs.db
 .DS_Store
+.superpowers/
