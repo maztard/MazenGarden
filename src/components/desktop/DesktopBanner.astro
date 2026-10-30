@@ -90,6 +90,7 @@ const { class: className } = Astro.props;
         type="button"
         class="desktop-banner__icon"
         data-desktop-icon="computer"
+        data-hero-action="computer"
         aria-label="My Computer"
       >
         <div class="desktop-banner__icon-graphic">
@@ -102,6 +103,7 @@ const { class: className } = Astro.props;
         type="button"
         class="desktop-banner__icon"
         data-desktop-icon="folder"
+        data-hero-action="folder"
         aria-label="Folder"
       >
         <div class="desktop-banner__icon-graphic">
@@ -114,6 +116,7 @@ const { class: className } = Astro.props;
         type="button"
         class="desktop-banner__icon"
         data-desktop-icon="trash"
+        data-hero-action="trash"
         aria-label="Recycle Bin"
       >
         <div class="desktop-banner__icon-graphic">
@@ -129,26 +132,16 @@ const { class: className } = Astro.props;
       <h1 class="desktop-banner__title">PAPI’S ARTISTIC GARDEN</h1>
       <p class="desktop-banner__subtitle">by Mazen Ragab</p>
     </div>
-  </div>
 
-  <!-- Bottom Win95 system strip -->
-  <div class="desktop-banner__system-strip" role="region" aria-label="Win95 system strip">
-    <div class="desktop-banner__strip-start-group">
-      <button type="button" class="desktop-banner__start-btn" aria-label="Start menu">
-        <PixelIcon name="flower" size={14} color="#06068e" />
-        <span class="desktop-banner__start-label">Start</span>
-      </button>
-
-      <div class="desktop-banner__path" title="Current path">
-        <span class="desktop-banner__path-text">C:\MAZEN\PORTFOLIO.EXE</span>
-      </div>
-    </div>
-
-    <div class="desktop-banner__status-group">
-      <div class="desktop-banner__status-cell">1 object(s) selected</div>
-      <div class="desktop-banner__status-cell">3.14 MB</div>
-      <div class="desktop-banner__status-cell desktop-banner__status-cell--ready">Ready</div>
-    </div>
+    <!-- Explore scroll hint button -->
+    <button
+      type="button"
+      class="desktop-banner__scroll-hint"
+      data-scroll-explore
+      aria-label="Scroll down to explore"
+    >
+      <span>Scroll down to explore ↓</span>
+    </button>
   </div>
 </header>
 
@@ -158,7 +151,9 @@ const { class: className } = Astro.props;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: clamp(260px, 35vw, 360px);
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
     overflow: hidden;
     background: linear-gradient(180deg, #12529e 0%, #8cc2ee 50%, #419826 65%, #195211 100%);
     border: 2px solid #808080;
@@ -187,8 +182,11 @@ const { class: className } = Astro.props;
     z-index: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
     flex: 1;
-    padding: 0.875rem 1.25rem 0.5rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    box-sizing: border-box;
   }
 
   /* Desktop icons row: Top-left */
@@ -291,37 +289,11 @@ const { class: className } = Astro.props;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   }
 
-  /* Bottom Win95 system strip */
-  .desktop-banner__system-strip {
-    position: relative;
-    z-index: 2;
-    background-color: var(--color-window, #c0c0c0);
-    border-top: 2px solid #ffffff;
-    border-bottom: 2px solid #000000;
-    padding: 3px 6px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    font-family: var(--font-body, sans-serif);
-    font-size: 0.75rem;
-    color: #000000;
-  }
-
-  .desktop-banner__strip-start-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .desktop-banner__start-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 2px 8px;
+  /* Explore scroll hint button */
+  .desktop-banner__scroll-hint {
+    align-self: center;
+    margin-top: auto;
+    margin-bottom: 0.75rem;
     background: #c0c0c0;
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
@@ -330,16 +302,25 @@ const { class: className } = Astro.props;
     box-shadow:
       inset 1px 1px 0 #dfdfdf,
       inset -1px -1px 0 #808080;
+    padding: 6px 16px;
     font-family: var(--font-display, monospace);
+    font-size: 0.8125rem;
     font-weight: 700;
-    font-size: 0.75rem;
     color: #000000;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-shadow: none;
   }
 
-  .desktop-banner__start-btn:active {
+  .desktop-banner__scroll-hint:hover {
+    background: #d4d4d4;
+  }
+
+  .desktop-banner__scroll-hint:active {
     border-top: 2px solid #000000;
     border-left: 2px solid #000000;
     border-right: 2px solid #ffffff;
@@ -347,53 +328,14 @@ const { class: className } = Astro.props;
     box-shadow:
       inset 1px 1px 0 #808080,
       inset -1px -1px 0 #dfdfdf;
-    padding: 3px 7px 1px 9px;
-  }
-
-  .desktop-banner__path {
-    background: #ffffff;
-    color: #000000;
-    border-top: 2px solid #808080;
-    border-left: 2px solid #808080;
-    border-right: 2px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
-    padding: 2px 8px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: min(320px, 100%);
-  }
-
-  .desktop-banner__path-text {
-    letter-spacing: 0.05em;
-  }
-
-  .desktop-banner__status-group {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-
-  .desktop-banner__status-cell {
-    border-top: 1px solid #808080;
-    border-left: 1px solid #808080;
-    border-right: 1px solid #ffffff;
-    border-bottom: 1px solid #ffffff;
-    padding: 2px 6px;
-    font-size: 0.7rem;
-    color: #222222;
-    white-space: nowrap;
-  }
-
-  .desktop-banner__status-cell--ready {
-    font-weight: 600;
+    padding: 7px 15px 5px 17px;
   }
 
   @media (max-width: 640px) {
+    .desktop-banner__content {
+      padding: 0.75rem 0.75rem 1rem;
+    }
+
     .desktop-banner__icons {
       gap: 0.5rem;
     }
@@ -403,18 +345,10 @@ const { class: className } = Astro.props;
       padding: 0.2rem 0.25rem;
     }
 
-    .desktop-banner__path {
-      max-width: 180px;
-    }
-
-    .desktop-banner__status-group {
-      font-size: 0.65rem;
-    }
-  }
-
-  @media (max-width: 440px) {
-    .desktop-banner__status-cell:nth-child(2) {
-      display: none;
+    .desktop-banner__scroll-hint {
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      margin-bottom: 0.5rem;
     }
   }
 </style>
