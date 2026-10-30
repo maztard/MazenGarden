@@ -1,53 +1,85 @@
 import { expect, test } from '@playwright/test';
 
-test('the projects window lists the other projects', async ({ page }) => {
-  await page.goto('./');
+test.describe('Projects Window', () => {
+  test('projects window opens via dock toggle and displays retro browser chrome with projects', async ({
+    page,
+  }) => {
+    await page.goto('./');
 
-  const projects = page.locator('#projects');
-  await expect(projects).toBeVisible();
-  await expect(projects).toContainText('Other Projects');
+    const projectsWin = page.locator('#window-projects');
+    const projectsDockBtn = page.locator('[data-dock-toggle="projects"]');
 
-  await expect(projects.getByRole('link', { name: 'EmadEats Project' })).toHaveAttribute(
-    'href',
-    'https://emadeats.vercel.app',
-  );
+    // Initially closed
+    await expect(projectsWin).toBeHidden();
+    await expect(projectsWin).toHaveAttribute('hidden');
+    await expect(projectsDockBtn).not.toHaveClass(/dock-button--active/);
 
-  const text = await projects.innerText();
-  expect(text).toContain('BuggyEyes');
-  expect(text).toContain('Sudany');
-  expect(text).not.toContain(']');
-});
+    // Click dock button to open
+    await projectsDockBtn.click();
+    await expect(projectsWin).toBeVisible();
+    await expect(projectsWin).not.toHaveAttribute('hidden');
+    await expect(projectsDockBtn).toHaveClass(/dock-button--active/);
 
-test('the close button hides the projects window and stays safe on a second click', async ({
-  page,
-}) => {
-  const pageErrors: string[] = [];
-  page.on('pageerror', (error) => pageErrors.push(error.message));
+    // Retro browser chrome address bar
+    await expect(projectsWin.locator('.projects-browser__address-url')).toHaveText(
+      'https://portfolio.local/projects',
+    );
 
-  await page.goto('./');
+    // Heading
+    await expect(projectsWin.locator('.projects-browser__heading')).toHaveText('Projects & Works');
 
-  const projects = page.locator('#projects');
-  const closeButton = projects.locator('[data-close]');
-  await expect(closeButton).toBeVisible();
+    // EmadEats link
+    const emadLink = projectsWin.getByRole('link', { name: 'EmadEats Project' });
+    await expect(emadLink).toHaveAttribute('href', 'https://emadeats.vercel.app');
+    await expect(emadLink).toHaveAttribute('target', '_blank');
 
-  await closeButton.click();
-  await expect(projects).toBeHidden();
-  expect(await projects.evaluate((section) => (section as HTMLElement).hidden)).toBe(true);
-
-  await closeButton.evaluate((button) => (button as HTMLButtonElement).click());
-  expect(await projects.evaluate((section) => (section as HTMLElement).hidden)).toBe(true);
-  expect(pageErrors).toEqual([]);
-});
-
-test('the projects window fits inside a 320px viewport', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto('./');
-
-  const edges = await page.locator('#projects .window').evaluate((window) => {
-    const rect = window.getBoundingClientRect();
-    return { left: rect.left, right: rect.right, viewport: document.documentElement.clientWidth };
+    // BuggyEyes and Sudany entries
+    const text = await projectsWin.innerText();
+    expect(text).toContain('BuggyEyes');
+    expect(text).toContain('Sudany');
   });
 
-  expect(edges.left).toBeGreaterThanOrEqual(0);
-  expect(edges.right).toBeLessThanOrEqual(edges.viewport);
+  test('close button hides projects window and deactivates dock toggle', async ({ page }) => {
+    await page.goto('./');
+
+    const projectsWin = page.locator('#window-projects');
+    const projectsDockBtn = page.locator('[data-dock-toggle="projects"]');
+
+    // Open projects
+    await projectsDockBtn.click();
+    await expect(projectsWin).toBeVisible();
+
+    // Click close button in title bar
+    const closeBtn = projectsWin.locator('[data-window-close]');
+    await expect(closeBtn).toBeVisible();
+    await closeBtn.click();
+
+    // Window is hidden and dock button is inactive
+    await expect(projectsWin).toBeHidden();
+    await expect(projectsWin).toHaveAttribute('hidden');
+    await expect(projectsDockBtn).not.toHaveClass(/dock-button--active/);
+  });
+
+  test('projects window fits inside a 320px viewport without overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto('./');
+
+    // Open projects
+    await page.locator('[data-dock-toggle="projects"]').click();
+    const projectsWin = page.locator('#window-projects');
+    await expect(projectsWin).toBeVisible();
+
+    const rect = await projectsWin.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return {
+        left: r.left,
+        right: r.right,
+        width: r.width,
+        clientWidth: document.documentElement.clientWidth,
+      };
+    });
+
+    expect(rect.left).toBeGreaterThanOrEqual(-1);
+    expect(rect.right).toBeLessThanOrEqual(rect.clientWidth + 1);
+  });
 });

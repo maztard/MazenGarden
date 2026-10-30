@@ -14,39 +14,28 @@ test('capture the homepage at desktop and mobile widths', async ({ page }) => {
   for (const [captureIndex, capture] of CAPTURES.entries()) {
     await page.setViewportSize({ width: capture.width, height: capture.height });
 
-    // The first capture navigates; the remaining captures reload for the new viewport.
     const response = captureIndex === 0 ? await page.goto('./') : await page.reload();
     expect(response?.status(), `${capture.name} navigation status`).toBe(200);
 
     await page.evaluate(() => document.fonts.ready.then(() => undefined));
 
-    const heading = page.locator('h1');
-    await expect(heading, `${capture.name} h1 count`).toHaveCount(1);
-    const headingText = await heading.evaluate((element) =>
-      (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
-    );
-    expect(headingText, `${capture.name} h1 text`).toBe('About Me!');
+    // Verify key titles render
+    const bannerTitle = page.locator('.desktop-banner__title');
+    await expect(bannerTitle, `${capture.name} banner title`).toHaveText('PAPI’S ARTISTIC GARDEN');
 
-    const images = page.locator('#pics img');
-    const imageCount = await images.count();
-    expect(imageCount, `${capture.name} image count`).toBe(4);
+    const canvasTitle = page.locator('.about-canvas__title');
+    await expect(canvasTitle, `${capture.name} canvas title`).toBeVisible();
 
-    // Trigger native lazy loading by scrolling every card image into view.
-    for (let index = 0; index < imageCount; index += 1) {
-      await images.nth(index).scrollIntoViewIfNeeded();
-    }
+    // Verify Meet Mazen portrait image loads
+    const photo = page.locator('#window-photos img.meet-mazen__image');
+    await expect(photo, `${capture.name} portrait image`).toBeVisible();
 
     await expect
-      .poll(
-        () =>
-          page.evaluate(() =>
-            Array.from(document.querySelectorAll<HTMLImageElement>('#pics img'))
-              .filter((image) => !image.complete || image.naturalWidth === 0)
-              .map((image) => image.currentSrc || image.src),
-          ),
-        { message: `${capture.name} images that failed to load`, timeout: 15_000 },
-      )
-      .toEqual([]);
+      .poll(() => photo.evaluate((img) => (img as HTMLImageElement).naturalWidth > 0), {
+        message: `${capture.name} photo loaded`,
+        timeout: 15_000,
+      })
+      .toBe(true);
 
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(100);

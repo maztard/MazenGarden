@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const SITE = 'https://maztard.github.io/MazenGarden';
-const PAGES = ['./', 'blog/', 'blog/hello-world/', 'does-not-exist/'];
+const PAGES = ['./', 'blog/hello-world/', 'does-not-exist/'];
 
 test('rss.xml lists published posts with absolute links', async ({ request }) => {
   const response = await request.get('rss.xml');
@@ -27,7 +27,6 @@ test('the sitemap lists the public pages and excludes drafts and 404', async ({ 
 
   const body = await response.text();
   expect(body).toContain(`<loc>${SITE}/</loc>`);
-  expect(body).toContain(`<loc>${SITE}/blog/</loc>`);
   expect(body).toContain(`<loc>${SITE}/blog/hello-world/</loc>`);
   expect(body).not.toContain('/404');
   expect(body).not.toContain('draft-example');
@@ -59,7 +58,6 @@ test('the 404 page is noindex and links back home', async ({ page }) => {
 test('each page declares its canonical URL and feed links', async ({ page }) => {
   const canonicals: Record<string, string> = {
     './': `${SITE}/`,
-    'blog/': `${SITE}/blog/`,
     'blog/hello-world/': `${SITE}/blog/hello-world/`,
   };
 

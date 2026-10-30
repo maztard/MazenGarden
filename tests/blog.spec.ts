@@ -1,72 +1,119 @@
 import { expect, test } from '@playwright/test';
 
-test('the blog index lists published posts and marks Writing as current', async ({ page }) => {
-  const response = await page.goto('blog/');
-  expect(response?.status()).toBe(200);
+test.describe('Blog & Writing', () => {
+  test('in-window blog reading on homepage allows navigating to post, back to list, and updates URL', async ({
+    page,
+  }) => {
+    await page.goto('./');
 
-  await expect(page).toHaveTitle('Writing · MazenGarden');
+    // Open writing window via dock button
+    const writingDockBtn = page.locator('[data-dock-toggle="writing"]');
+    await writingDockBtn.click();
 
-  const headings = page.locator('h1');
-  await expect(headings).toHaveCount(1);
-  await expect(headings).toHaveText('Writing');
+    const writingWin = page.locator('#window-writing');
+    await expect(writingWin).toBeVisible();
 
-  const nav = page.getByRole('navigation', { name: 'Primary' });
-  await expect(nav.getByRole('link', { name: 'Writing' })).toHaveAttribute('aria-current', 'page');
+    const listView = writingWin.locator('[data-writing-list]');
+    const articleView = writingWin.locator('[data-writing-post="hello-world"]');
+    const backBtn = writingWin.locator('[data-writing-back]').first();
 
-  const postTitle = page.getByRole('heading', { level: 2, name: 'Hello, world' });
-  await expect(postTitle).toHaveCount(1);
+    // List view is visible initially, article view is hidden
+    await expect(listView).toBeVisible();
+    await expect(articleView).toBeHidden();
 
-  await postTitle.getByRole('link', { name: 'Hello, world' }).click();
-  await expect(page).toHaveURL('http://localhost:4321/MazenGarden/blog/hello-world/');
-});
+    // Verify published post item
+    const postLink = writingWin.locator('[data-writing-link="hello-world"]');
+    await expect(postLink).toBeVisible();
+    await expect(postLink.locator('.writing-item__title')).toHaveText('Hello, world');
+    await expect(postLink.locator('.writing-item__desc')).toHaveText(
+      'A first note from the garden.',
+    );
 
-test('the post page renders its title, date, lede, body, and back links', async ({ page }) => {
-  const response = await page.goto('blog/hello-world/');
-  expect(response?.status()).toBe(200);
+    // Click blog post link to read inline
+    await postLink.click();
 
-  await expect(page).toHaveTitle('Hello, world · MazenGarden');
+    // Article is visible inline, list is hidden, URL is updated to canonical
+    await expect(listView).toBeHidden();
+    await expect(articleView).toBeVisible();
+    expect(page.url()).toContain('/blog/hello-world/');
 
-  const headings = page.locator('h1');
-  await expect(headings).toHaveCount(1);
-  await expect(headings).toHaveText('Hello, world');
+    // Article content is rendered
+    await expect(articleView.locator('.writing-reader-title')).toHaveText('Hello, world');
+    await expect(articleView.locator('.writing-reader-meta time')).toHaveText('October 28, 2026');
+    await expect(articleView.locator('.writing-reader-lead')).toHaveText(
+      'A first note from the garden.',
+    );
+    await expect(articleView.locator('.prose')).toContainText(
+      'Welcome to my corner of the internet',
+    );
 
-  const nav = page.getByRole('navigation', { name: 'Primary' });
-  const writingLink = nav.getByRole('link', { name: 'Writing' });
-  await expect(writingLink).toHaveAttribute('aria-current', 'location');
-  await expect(writingLink).not.toHaveAttribute('aria-current', 'page');
+    // Click "← Back to articles"
+    await backBtn.click();
 
-  await expect(page.locator('.post__meta time')).toHaveText('October 28, 2026');
-  await expect(page.locator('.post__lede')).toHaveText('A first note from the garden.');
-  await expect(page.locator('.prose')).toContainText('Welcome to my corner of the internet');
+    // List view is visible again, article is hidden, URL is reset
+    await expect(listView).toBeVisible();
+    await expect(articleView).toBeHidden();
+    expect(page.url()).not.toContain('/blog/hello-world/');
+  });
 
-  const backLinks = page.locator('.post__back');
-  await expect(backLinks.first()).toHaveAttribute('href', '/MazenGarden/blog/');
-  await expect(backLinks.last()).toHaveAttribute('href', '/MazenGarden/blog/');
-});
+  test('canonical route /blog/[slug]/ renders post directly in writing window with active dock button', async ({
+    page,
+  }) => {
+    const response = await page.goto('blog/hello-world/');
+    expect(response?.status()).toBe(200);
 
-test('the homepage shows the latest writing', async ({ page }) => {
-  await page.goto('./');
+    // Title reflects post
+    await expect(page).toHaveTitle(/Hello, world/);
 
-  await expect(page.locator('h1')).toHaveCount(1);
+    // Canonical link points to the post
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://maztard.github.io/MazenGarden/blog/hello-world/',
+    );
 
-  const section = page.locator('section[aria-labelledby="writing-title"]');
-  await expect(section).toHaveCount(1);
-  await expect(section.getByRole('heading', { level: 2, name: 'Latest writing' })).toHaveCount(1);
-  await expect(section.getByRole('heading', { level: 3, name: 'Hello, world' })).toHaveCount(1);
-  await expect(section.getByRole('link', { name: 'All posts →' })).toHaveAttribute(
-    'href',
-    '/MazenGarden/blog/',
-  );
-});
+    // Writing window is open on initial load
+    const writingWin = page.locator('#window-writing');
+    await expect(writingWin).toBeVisible();
+    await expect(writingWin).not.toHaveAttribute('hidden');
 
-test('drafts stay out of the production build', async ({ page }) => {
-  await page.goto('./');
-  await expect(page.getByText('Draft example')).toHaveCount(0);
+    // Dock toggle for writing is active
+    const writingDockBtn = page.locator('[data-dock-toggle="writing"]');
+    await expect(writingDockBtn).toHaveClass(/dock-button--active/);
 
-  await page.goto('blog/');
-  await expect(page.locator('h1')).toHaveCount(1);
-  await expect(page.getByText('Draft example')).toHaveCount(0);
+    // Active post reader is visible
+    const articleView = writingWin.locator('[data-writing-post="hello-world"]');
+    await expect(articleView).toBeVisible();
+    await expect(articleView.locator('.writing-reader-title')).toHaveText('Hello, world');
+    await expect(articleView.locator('.writing-reader-meta time')).toHaveText('October 28, 2026');
+    await expect(articleView.locator('.writing-reader-lead')).toHaveText(
+      'A first note from the garden.',
+    );
+    await expect(articleView.locator('.prose')).toContainText(
+      'Welcome to my corner of the internet',
+    );
 
-  const response = await page.goto('blog/draft-example/');
-  expect(response?.status()).toBe(404);
+    // Clicking back button switches to list view and resets URL
+    const backBtn = writingWin.locator('[data-writing-back]').first();
+    await backBtn.click();
+
+    const listView = writingWin.locator('[data-writing-list]');
+    await expect(listView).toBeVisible();
+    await expect(articleView).toBeHidden();
+    expect(page.url()).not.toContain('/blog/hello-world/');
+  });
+
+  test('drafts stay out of the production build', async ({ page }) => {
+    await page.goto('./');
+
+    // Open writing window
+    await page.locator('[data-dock-toggle="writing"]').click();
+    await expect(page.locator('#window-writing')).toBeVisible();
+
+    // Verify draft post is not in writing list
+    await expect(page.getByText('Draft example')).toHaveCount(0);
+
+    // Navigating directly to draft route returns 404
+    const response = await page.goto('blog/draft-example/');
+    expect(response?.status()).toBe(404);
+  });
 });

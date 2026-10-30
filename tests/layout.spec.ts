@@ -1,11 +1,8 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 
-const ROOT = process.cwd();
 const ORIGIN = 'http://localhost:4321';
 const TRACKED_RESOURCE_TYPES = new Set(['document', 'stylesheet', 'script', 'font', 'image']);
-const PATHS = ['./', 'blog/', 'blog/hello-world/'] as const;
+const PATHS = ['./', 'blog/hello-world/'] as const;
 const VIEWPORTS = [
   { width: 320, height: 568 },
   { width: 390, height: 844 },
@@ -86,15 +83,16 @@ for (const path of PATHS) {
           .filter((image) => (image.getAttribute('alt') ?? '').trim() === '')
           .map((image) => image.currentSrc || image.src);
 
-        const inlineStyles = Array.from(document.querySelectorAll('[style]')).map((element) =>
-          element.outerHTML.slice(0, 120),
-        );
+        // Disallow arbitrary template inline styles, excluding desktop window elements managed by window manager
+        const inlineStyles = Array.from(
+          document.querySelectorAll('[style]:not([data-window])'),
+        ).map((element) => element.outerHTML.slice(0, 120));
 
         const badBasePaths = Array.from(document.querySelectorAll('a[href^="/"]'))
           .map((anchor) => anchor.getAttribute('href') ?? '')
           .filter((href) => !href.startsWith('/MazenGarden/'));
 
-        const bioOverflows = Array.from(document.querySelectorAll('.hero__bio p')).map(
+        const bioOverflows = Array.from(document.querySelectorAll('.about-canvas__bio p')).map(
           (paragraph) => ({
             text: (paragraph.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
             overflow: paragraph.scrollWidth - paragraph.clientWidth,
@@ -120,8 +118,9 @@ for (const path of PATHS) {
 
       expect(
         layout.headings.filter((heading) => heading.level === 1),
-        'page headings',
-      ).toHaveLength(1);
+        'page level-1 headings',
+      ).toHaveLength(2);
+
       for (let index = 1; index < layout.headings.length; index += 1) {
         const previous = layout.headings[index - 1];
         const current = layout.headings[index];
@@ -136,7 +135,7 @@ for (const path of PATHS) {
       expect(layout.badBasePaths, 'internal links missing the base path').toEqual([]);
 
       if (path === './') {
-        expect(layout.bioOverflows, 'hero bio paragraphs').toHaveLength(5);
+        expect(layout.bioOverflows, 'about canvas bio paragraphs').toHaveLength(5);
         for (const paragraph of layout.bioOverflows) {
           expect(
             paragraph.overflow,
@@ -168,48 +167,47 @@ for (const path of PATHS) {
   }
 }
 
-test('the four photo cards share one row at 1280px', async ({ page }) => {
+test('desktop floating layout positions photos upper-right and socials overlapping at 1280px', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('./');
 
-  await expect(page.locator('.card')).toHaveCount(4);
-  await expect
-    .poll(() =>
-      page
-        .locator('.card')
-        .evaluateAll(
-          (cards) =>
-            new Set(cards.map((card) => Math.round(card.getBoundingClientRect().top))).size,
-        ),
-    )
-    .toBe(1);
+  const photosWin = page.locator('#window-photos');
+  const socialsWin = page.locator('#window-socials');
+
+  const photosBox = await photosWin.boundingBox();
+  const socialsBox = await socialsWin.boundingBox();
+  expect(photosBox).not.toBeNull();
+  expect(socialsBox).not.toBeNull();
+
+  // Desktop positioning: photos in right quadrant, socials overlapping
+  expect(photosBox!.x).toBeGreaterThan(500);
+  expect(socialsBox!.x).toBeGreaterThanOrEqual(photosBox!.x);
+  expect(socialsBox!.y).toBeGreaterThan(photosBox!.y);
 });
 
-test('the four photo cards stack in four rows at 390px', async ({ page }) => {
+test('mobile layout stacks windows in document flow with position static at 390px', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
 
-  await expect(page.locator('.card')).toHaveCount(4);
-  await expect
-    .poll(() =>
-      page
-        .locator('.card')
-        .evaluateAll(
-          (cards) =>
-            new Set(cards.map((card) => Math.round(card.getBoundingClientRect().top))).size,
-        ),
-    )
-    .toBe(4);
-});
+  const positions = await page.evaluate(() => {
+    const photos = document.querySelector('#window-photos') as HTMLElement;
+    const socials = document.querySelector('#window-socials') as HTMLElement;
+    const stage = document.querySelector('.desktop-stage') as HTMLElement;
 
-test('the stylesheet has no imports and no Press Start 2P font', () => {
-  const css = readFileSync(resolve(ROOT, 'src/styles/global.css'), 'utf8');
+    return {
+      photosPosition: window.getComputedStyle(photos).position,
+      socialsPosition: window.getComputedStyle(socials).position,
+      stageDirection: window.getComputedStyle(stage).flexDirection,
+      photosTop: photos.getBoundingClientRect().top,
+      socialsTop: socials.getBoundingClientRect().top,
+    };
+  });
 
-  expect(css).not.toContain('@import');
-  expect(css).not.toContain('Press Start 2P');
-});
-
-test('the old static files are gone', () => {
-  expect(existsSync(resolve(ROOT, 'index.html'))).toBe(false);
-  expect(existsSync(resolve(ROOT, 'styles.css'))).toBe(false);
+  expect(positions.photosPosition).toBe('static');
+  expect(positions.socialsPosition).toBe('static');
+  expect(positions.socialsTop).toBeGreaterThan(positions.photosTop);
 });

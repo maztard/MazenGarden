@@ -1,10 +1,31 @@
 import { expect, test } from '@playwright/test';
 
-test('homepage responds at the production base path', async ({ page }) => {
+test('homepage responds at the production base path with retro desktop components', async ({
+  page,
+}) => {
   const response = await page.goto('./');
   expect(response?.status()).toBe(200);
+
+  // Title check
   await expect(page).toHaveTitle(/Mazen Ragab/);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/About\s+Me!/);
+
+  // Banner and Canvas headings
+  await expect(page.locator('.desktop-banner__title')).toHaveText('PAPI’S ARTISTIC GARDEN');
+  await expect(page.locator('.about-canvas__title')).toContainText('About');
+  await expect(page.locator('.about-canvas__title')).toContainText('Me!');
+
+  // Initial windows are visible
+  await expect(page.locator('#window-photos')).toBeVisible();
+  await expect(page.locator('#window-socials')).toBeVisible();
+});
+
+test('canonical blog post route responds and loads in writing window', async ({ page }) => {
+  const response = await page.goto('blog/hello-world/');
+  expect(response?.status()).toBe(200);
+
+  await expect(page).toHaveTitle(/Hello, world/);
+  await expect(page.locator('#window-writing')).toBeVisible();
+  await expect(page.locator('[data-writing-post="hello-world"]')).toBeVisible();
 });
 
 test('the built page has no Google Fonts requests', async ({ page }) => {
