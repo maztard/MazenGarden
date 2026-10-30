@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'SerenityOS Emoji';
+  src: url('../assets/fonts/SerenityOS-Emoji.ttf') format('truetype');
+  font-display: swap;
+  unicode-range: U+231A-1FAF6;
+}
+
 :root {
   --color-text: #1a1a1a;
   --color-muted: #555;
@@ -15,8 +22,8 @@
   --color-xp-green-dark: #1f6b1f;
   --color-xp-orange: #f57c00;
   --color-xp-silver: #ece9d8;
-  --font-body: var(--font-geist-pixel), system-ui, sans-serif;
-  --font-display: var(--font-dotemp), 'Courier New', monospace;
+  --font-body: var(--font-geist-pixel), 'SerenityOS Emoji', system-ui, sans-serif;
+  --font-display: var(--font-dotemp), 'SerenityOS Emoji', 'Courier New', monospace;
   --container: 75rem;
   --gutter: clamp(1.25rem, 4vw, 3.125rem);
   --section-space: clamp(3rem, 8vw, 6rem);
