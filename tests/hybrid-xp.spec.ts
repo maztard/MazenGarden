@@ -92,5 +92,50 @@ test.describe('Hybrid Windows XP + 95 Desktop', () => {
     const barBg = await focusedBar.evaluate((el) => window.getComputedStyle(el).backgroundImage);
     expect(barBg).toMatch(/gradient/i);
   });
+
+  test('dragging uses absolute positioning on the canvas and desktop icons trigger actions', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto('./');
+
+    // Test clicking Folder hero icon opens Projects window
+    const folderBtn = page.locator('[data-hero-action="folder"]');
+    await folderBtn.click();
+    const projectsWin = page.locator('#window-projects');
+    await expect(projectsWin).toBeVisible();
+
+    // Test dragging a window uses absolute positioning (not fixed)
+    const handle = projectsWin.locator('[data-window-handle]');
+    await handle.scrollIntoViewIfNeeded();
+    const handleBox = await handle.boundingBox();
+    expect(handleBox).not.toBeNull();
+
+    await page.mouse.move(handleBox!.x + 20, handleBox!.y + 10);
+    await page.mouse.down();
+    await page.mouse.move(handleBox!.x + 70, handleBox!.y + 60, { steps: 5 });
+    await page.mouse.up();
+
+    const position = await projectsWin.evaluate((el) => window.getComputedStyle(el).position);
+    expect(position).toBe('absolute');
+
+    // Test clicking Trash hero icon opens RSS window
+    const trashBtn = page.locator('[data-hero-action="trash"]');
+    await trashBtn.click();
+    const rssWin = page.locator('#window-rss');
+    await expect(rssWin).toBeVisible();
+
+    // Test clicking Computer hero icon brings Photos window to front
+    const compBtn = page.locator('[data-hero-action="computer"]');
+    await compBtn.click();
+    const photosWin = page.locator('#window-photos');
+    await expect(photosWin).toBeVisible();
+    await expect(photosWin.locator('.desktop-window__bar--focused')).toBeVisible();
+
+    // Test scroll hint button
+    const exploreBtn = page.locator('[data-scroll-explore]');
+    await expect(exploreBtn).toBeVisible();
+    await exploreBtn.click();
+  });
 });
 

@@ -891,6 +891,7 @@ a:hover {
 
 /* Floating positions on desktop (> 900px) */
 @media (min-width: 901px) {
+  /* Canvas layer container allowing absolute positioning of floating windows */
   .desktop-windows-layer {
     position: relative;
     min-height: 600px;

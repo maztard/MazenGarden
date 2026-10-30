@@ -107,6 +107,8 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
   let isDragging = false;
   let startX = 0;
   let startY = 0;
+  let grabOffsetX = 0;
+  let grabOffsetY = 0;
   let initialLeft = 0;
   let initialTop = 0;
 
@@ -131,11 +133,17 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
       // Ignore pointer capture errors in testing/virtual environments
     }
 
+    const stage = document.querySelector<HTMLElement>('.desktop-stage') || document.body;
     const rect = win.getBoundingClientRect();
+    const container = (win.offsetParent as HTMLElement) || stage;
+    const containerRect = container.getBoundingClientRect();
+
     startX = e.clientX;
     startY = e.clientY;
-    initialLeft = rect.left;
-    initialTop = rect.top;
+    grabOffsetX = e.clientX - rect.left;
+    grabOffsetY = e.clientY - rect.top;
+    initialLeft = rect.left - containerRect.left;
+    initialTop = rect.top - containerRect.top;
   });
 
   handle.addEventListener('pointermove', (e: PointerEvent) => {
@@ -144,11 +152,11 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
 
-    // Only switch to fixed positioning once actual drag movement occurs (> 3px)
+    // Only switch to absolute positioning once actual drag movement occurs (> 3px)
     // to prevent reflowing / layout jumps of sibling elements on simple clicks
-    if (win.style.position !== 'fixed') {
+    if (win.style.position !== 'absolute') {
       if (Math.hypot(dx, dy) < 3) return;
-      win.style.position = 'fixed';
+      win.style.position = 'absolute';
       win.style.left = `${initialLeft}px`;
       win.style.top = `${initialTop}px`;
       win.style.margin = '0';
@@ -156,26 +164,28 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
       win.style.right = 'auto';
     }
 
-    const newLeft = initialLeft + dx;
-    const newTop = initialTop + dy;
+    const stage = document.querySelector<HTMLElement>('.desktop-stage') || document.body;
+    const stageRect = stage.getBoundingClientRect();
+    const container = (win.offsetParent as HTMLElement) || stage;
+    const containerRect = container.getBoundingClientRect();
+
+    const newLeft = e.clientX - grabOffsetX - containerRect.left;
+    const newTop = e.clientY - grabOffsetY - containerRect.top;
 
     const winWidth = win.offsetWidth;
     const winHeight = win.offsetHeight;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
 
-    const dockEl = document.querySelector<HTMLElement>(
-      '.dock, [role="region"][aria-label="Taskbar"]',
-    );
-    const dockHeight = dockEl ? dockEl.getBoundingClientRect().height : 36;
+    const offsetX = stageRect.left - containerRect.left;
+    const offsetY = stageRect.top - containerRect.top;
 
-    // Clamped so at least 80px remains on screen horizontally
-    const minLeft = Math.min(0, 80 - winWidth);
-    const maxLeft = Math.max(minLeft, viewportWidth - 80);
+    // Clamped relative to the stage bounds:
+    // horizontally: at least 80px remains on screen/stage
+    const minLeft = offsetX + Math.min(0, 80 - winWidth);
+    const maxLeft = offsetX + Math.max(Math.min(0, 80 - winWidth), stage.clientWidth - 80);
 
-    // Stays on screen at top (>= 0) and stays above dock at bottom
-    const minTop = 0;
-    const maxTop = Math.max(0, viewportHeight - dockHeight - winHeight);
+    // vertically: stays inside stage bounds
+    const minTop = offsetY;
+    const maxTop = offsetY + Math.max(0, stage.clientHeight - winHeight);
 
     const clampedLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
     const clampedTop = Math.max(minTop, Math.min(newTop, maxTop));
@@ -307,6 +317,70 @@ export function initBlogReader(): void {
   });
 }
 
+export function initDesktopHeroActions(): void {
+  const computerBtn = document.querySelector<HTMLElement>('[data-hero-action="computer"]');
+  if (computerBtn) {
+    computerBtn.addEventListener('click', () => {
+      const photosWin = document.querySelector<HTMLElement>('[data-window="photos"]');
+      if (photosWin) {
+        photosWin.hidden = false;
+        const dockBtn = document.querySelector<HTMLElement>('[data-dock-toggle="photos"]');
+        if (dockBtn) dockBtn.classList.add('dock-button--active');
+        bringToFront(photosWin);
+      }
+      const target =
+        document.querySelector<HTMLElement>('#about-me') ||
+        document.querySelector<HTMLElement>('#main') ||
+        document.querySelector<HTMLElement>('.desktop-stage');
+      target?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  const folderBtn = document.querySelector<HTMLElement>('[data-hero-action="folder"]');
+  if (folderBtn) {
+    folderBtn.addEventListener('click', () => {
+      const projectsWin = document.querySelector<HTMLElement>('[data-window="projects"]');
+      if (projectsWin) {
+        projectsWin.hidden = false;
+        const dockBtn = document.querySelector<HTMLElement>('[data-dock-toggle="projects"]');
+        if (dockBtn) dockBtn.classList.add('dock-button--active');
+        bringToFront(projectsWin);
+      }
+      const target =
+        document.querySelector<HTMLElement>('#main') ||
+        document.querySelector<HTMLElement>('.desktop-stage');
+      target?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  const trashBtn = document.querySelector<HTMLElement>('[data-hero-action="trash"]');
+  if (trashBtn) {
+    trashBtn.addEventListener('click', () => {
+      const rssWin = document.querySelector<HTMLElement>('[data-window="rss"]');
+      if (rssWin) {
+        rssWin.hidden = false;
+        const dockBtn = document.querySelector<HTMLElement>('[data-dock-toggle="rss"]');
+        if (dockBtn) dockBtn.classList.add('dock-button--active');
+        bringToFront(rssWin);
+      }
+      const target =
+        document.querySelector<HTMLElement>('#main') ||
+        document.querySelector<HTMLElement>('.desktop-stage');
+      target?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  const exploreBtn = document.querySelector<HTMLElement>('[data-scroll-explore]');
+  if (exploreBtn) {
+    exploreBtn.addEventListener('click', () => {
+      const target =
+        document.querySelector<HTMLElement>('#main') ||
+        document.querySelector<HTMLElement>('.desktop-stage');
+      target?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+}
+
 export function initWindowManager(force = false): void {
   if (isInitialized && !force) return;
   isInitialized = true;
@@ -395,6 +469,9 @@ export function initWindowManager(force = false): void {
 
   // In-window blog reader
   initBlogReader();
+
+  // Desktop hero icon actions
+  initDesktopHeroActions();
 
   // 24h clock update every 15s (singleton guard)
   if (!(window as unknown as { __dockClockInit?: boolean }).__dockClockInit) {
