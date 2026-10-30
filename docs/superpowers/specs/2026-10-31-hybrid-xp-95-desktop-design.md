@@ -9,13 +9,23 @@
 
 ## 1. Intent & Problem Statement
 
-The user requested two major design evolutions:
+The user requested four major design evolutions:
 1. **Remove Duplicate Taskbar & Make Banner Fullscreen (100vh):**
    - The desktop banner currently contains a middle system strip (`Start`, path, status cells) that creates a redundant "two taskbars" look alongside the bottom dock.
-   - The top hero desktop banner should span the screen's full viewport width and height (`100vw` / `100vh`), presenting an authentic full-screen desktop that encourages users to explore by scrolling down or clicking the desktop icons.
-2. **Pivot to Hybrid Windows XP + Windows 95 Palette:**
+   - The top hero desktop banner spans the full viewport (`100vw` / `100vh`), presenting an authentic full-screen desktop that invites users to explore by scrolling down or clicking the desktop icons.
+2. **Absolute Canvas Window Positioning (No Sticky/Fixed Viewport Overlay):**
+   - Draggable windows must **not** follow the user down the screen with `position: fixed`.
+   - Windows must use container-relative positioning (`position: absolute` within the desktop stage). When dropped, they remain at that exact coordinate on the desktop canvas so natural page scrolling leaves them in place.
+3. **Personal Branding & Multi-Brand Socials Window:**
+   - Elevate the portfolio into a distinctive personal branding hub.
+   - Feature Mazen's three Instagram brands with distinct identities:
+     - **Main Brand:** `@bigdaddymazen` (`https://www.instagram.com/bigdaddymazen/`) — Personal brand & main voice (featured prominently).
+     - **Creative / Art Brand:** `@papisartisticgarden` (`https://www.instagram.com/papisartisticgarden/`) — Design, projects & aesthetic garden.
+     - **Visual Brand:** `@thewonderfulworldofmazen` (`https://www.instagram.com/thewonderfulworldofmazen/`) — Photography & world curation.
+     - Plus GitHub (`maztard`) and Email (`mazenra100@gmail.com`).
+4. **Pivot to Hybrid Windows XP (Luna) + Windows 95 Palette:**
    - Elevate the retro aesthetic with the vibrant, cheerful color saturation of Windows XP (Luna royal blue `#0055ea`, emerald green `Start` button, rich Bliss sky/grass greens, golden accents) while maintaining authentic Win95 3D physical bevels and pixel icons.
-3. **Interactive Square Skills Tiles:**
+5. **Interactive Square Skills Tiles:**
    - The circular skill badges in the About section feel static and lack life.
    - Replace circles with interactive **3D square tiles/buttons** themed around Win95/XP control applets with vibrant accent colors, hover glows, and tactile press-down states.
 
@@ -26,6 +36,10 @@ The user requested two major design evolutions:
 ### Goals
 - **Single Taskbar:** Only the fixed bottom Win95/XP taskbar dock remains; the redundant middle strip in `DesktopBanner.astro` is removed.
 - **Fullscreen Hero Landing:** `DesktopBanner` fills `100vw` and `100vh` (or `100dvh`), featuring desktop icons, centered title, and a retro explore indicator.
+- **Canvas-Anchored Windows:** Windows use container-relative absolute positioning. Dragging updates canvas coordinates (`top` / `left`), so scrolling scrolls past the windows naturally without sticky viewport pinning.
+- **Personal Brand Showcase:**
+  - `SocialsWindow.astro` highlights `@bigdaddymazen` as the main personal brand, `@papisartisticgarden` as the first creative account, and `@thewonderfulworldofmazen` as the third visual account.
+  - Distinctive retro badges/chips explaining each brand's role.
 - **Interactive Desktop Icons:**
   - `My Computer`: Smooth-scrolls to the About Me canvas and focuses the `MEET-MAZEN` photo window.
   - `Folder`: Opens and focuses the `PROJECTS` window.
@@ -42,7 +56,7 @@ The user requested two major design evolutions:
     - **Psychology**: Crimson Coral (`#d32f2f`)
     - **Web**: Emerald Teal (`#00796b`)
   - Tactile 3D press-down on `:active`, hover lift, and skill highlights.
-- **100% Green Test Suite:** Update Playwright tests to verify full-screen hero, icon clicks, single dock, and square skills.
+- **100% Green Test Suite:** Update Playwright tests to verify full-screen hero, icon clicks, single dock, square skills, and updated socials.
 
 ### Non-Goals
 - No heavy third-party CSS or animation libraries (keep pure CSS and vanilla TypeScript).
@@ -77,24 +91,38 @@ The user requested two major design evolutions:
   - Bold pixel skill title.
   - Subtitle / specialty micro-copy (e.g. "Systems & Code", "LLMs & Automation", "Growth & Brand", "Human Behavior", "Fullstack Apps").
 
-### 4.3 `DesktopDock.astro` & `DockButton.astro`
+### 4.3 `SocialsWindow.astro` (Personal Branding Hub)
+- Showcases Mazen's full brand footprint with retro Windows 95/XP contact card styling:
+  1. **`@papisartisticgarden`** (Creative Garden, Art & Code)
+  2. **`@bigdaddymazen`** (Main Personal Brand & Voice — prominently highlighted with gold accent)
+  3. **`@thewonderfulworldofmazen`** (Visual World, Aesthetics & Photography)
+  4. **GitHub:** `maztard`
+  5. **Email:** `mazenra100@gmail.com`
+- Each profile link features pixel icon, account handle, and descriptive brand tag.
+
+### 4.4 `DesktopDock.astro` & `DockButton.astro`
 - Style the `Start` button with Windows XP vibrant emerald green gradient (`#388e3c` to `#2e7d32`) with bold white text.
 - Dock buttons retain Win95 tactile bevels with Luna blue active glow.
 
-### 4.4 `desktop.ts`
+### 4.5 `desktop.ts` & Window Dragging
+- **Container-Relative Absolute Dragging:**
+  - Replace `position: fixed` with `position: absolute` within `.desktop-stage` (which has `position: relative`).
+  - Calculate drag coordinates relative to the stage: `stageRect = stage.getBoundingClientRect()`, `left = clientX - stageRect.left - grabOffsetX`, `top = clientY - stageRect.top - grabOffsetY`.
+  - Windows stay fixed to the canvas where placed, scrolling naturally with page flow instead of following the viewport stickily.
 - Add click listeners for `[data-hero-action]`:
-  - `computer`: Scrolls to `#main` or `#about-me` and brings `MEET-MAZEN` to front.
+  - `computer`: Scrolls to `#about-me` and brings `MEET-MAZEN` to front.
   - `folder`: Opens `projects` window and brings it to front.
   - `trash`: Opens `rss` window and brings it to front.
-  - Scroll hint: Smooth-scrolls to the desktop stage.
+  - Scroll hint: Smooth-scrolls down past the 100vh banner to the canvas layer.
 
-### 4.5 `global.css`
+### 4.6 `global.css`
 - Update design tokens for XP Luna palette:
   - `--color-xp-blue: #0055ea;`
   - `--color-xp-blue-dark: #003db8;`
   - `--color-xp-green: #388e3c;`
   - `--color-xp-orange: #f57c00;`
 - Style `.skill-tile` as square cards with hover elevation and `:active` inset depression.
+- Container-relative positioning for floating windows on desktop (`position: absolute` within `.desktop-stage`).
 
 ---
 
