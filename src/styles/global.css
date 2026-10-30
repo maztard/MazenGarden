@@ -479,6 +479,162 @@ a:hover {
 }
 
 /* ==========================================================================
+   Top Landscape Banner
+   ========================================================================== */
+
+.desktop-banner {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.desktop-banner__content,
+.desktop-banner__system-strip,
+.desktop-banner__strip-start-group,
+.desktop-banner__path {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.desktop-banner__title {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   About Canvas Component (Left Side)
+   ========================================================================== */
+
+.about-canvas {
+  width: 100%;
+  max-width: 48rem;
+  color: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.about-canvas__hero {
+  margin-bottom: 2rem;
+}
+
+.about-canvas__title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-display, 'Dotemp-8bit', 'Courier New', monospace);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+
+.about-canvas__title-line1 {
+  font-size: clamp(3.2rem, 10vw, 6.5rem);
+  font-weight: 900;
+  color: #1a1a1a;
+}
+
+.about-canvas__title-line2 {
+  font-size: clamp(3.2rem, 10vw, 6.5rem);
+  font-weight: 900;
+  color: var(--color-accent, #c02a2a);
+  margin-left: clamp(1.5rem, 7vw, 4.5rem);
+}
+
+.about-canvas__name {
+  margin: 1.25rem 0 0;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(1.2rem, 3.2vw, 1.65rem);
+  font-style: italic;
+  font-weight: 700;
+  color: var(--color-accent, #a52a2a);
+  letter-spacing: 0.02em;
+}
+
+.about-canvas__alias {
+  font-weight: 800;
+  color: var(--color-accent, #a52a2a);
+}
+
+.about-canvas__bio {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.0625rem);
+  line-height: 1.75;
+  color: #2b2b2b;
+  max-width: 65ch;
+}
+
+.about-canvas__bio p {
+  margin: 0;
+  line-height: 1.75;
+}
+
+.about-canvas__section {
+  margin-top: 2.5rem;
+}
+
+.about-canvas__section-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-display, 'Dotemp-8bit', monospace);
+  font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2.5px;
+  color: #1a1a1a;
+}
+
+.about-canvas__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding: 0;
+  list-style: none;
+}
+
+.about-canvas__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  border-radius: 50%;
+  background: #f4f4f4;
+  color: #111111;
+  border: 2px solid #1a1a1a;
+  box-shadow: 2px 2px 0 #000000;
+  font-family: var(--font-display, monospace);
+  font-size: 0.875rem;
+  font-weight: 800;
+  text-align: center;
+  user-select: none;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.about-canvas__badge:hover {
+  background: #ffe838;
+  transform: translateY(-2px);
+}
+
+.about-canvas__education {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* ==========================================================================
    Single-Page Retro Desktop Stage & Win95 Windows
    ========================================================================== */
 
@@ -487,7 +643,9 @@ a:hover {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  padding-bottom: 46px; /* Space for fixed bottom dock */
+  padding-bottom: 50px; /* Space for fixed bottom dock */
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .desktop-stage {
@@ -506,60 +664,73 @@ a:hover {
 
 .desktop-canvas-layer {
   min-width: 0;
+  max-width: 100%;
 }
 
 .desktop-windows-layer {
   position: relative;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  max-width: 100%;
 }
 
+/* Win95 3D raised border on window container */
 .desktop-window {
   position: relative;
   background: var(--color-window, #c0c0c0);
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #000000;
-  border-bottom: 2px solid #000000;
+  border: 2px solid;
+  border-color: #dfdfdf #000000 #000000 #dfdfdf;
   box-shadow:
-    inset 1px 1px 0 #dfdfdf,
-    inset -1px -1px 0 #808080,
-    4px 6px 12px rgba(0, 0, 0, 0.25);
+    inset 1px 1px #ffffff,
+    inset -1px -1px #808080,
+    3px 5px 12px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
   max-width: 100%;
 }
 
+/* Window Title Bar: inactive #808080 with light grey text */
 .desktop-window__bar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(90deg, #06068e 0%, #1084d0 100%);
   padding: 3px 4px 3px 6px;
-  color: #ffffff;
+  background: #808080;
+  color: #dfdfdf;
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   box-sizing: border-box;
+  font-family: var(--font-display, monospace);
+  font-size: 0.8125rem;
+  font-weight: 700;
 }
 
 .desktop-window__bar:active {
   cursor: grabbing;
 }
 
+/* Window Title Bar: focused navy gradient / #000080 with white text */
+.desktop-window__bar--focused {
+  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  color: #ffffff;
+}
+
 .desktop-window__title {
   flex: 1;
-  font-family: var(--font-display, monospace);
-  font-size: 0.8125rem;
-  font-weight: 700;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
   letter-spacing: 0.04em;
-  color: #ffffff;
+  color: #dfdfdf;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.desktop-window__bar--focused .desktop-window__title {
+  color: #ffffff;
+}
+
+/* Close [X] Button: 3D raised button with bevels, depressed on active */
 .desktop-window__close {
   display: inline-flex;
   align-items: center;
@@ -593,17 +764,113 @@ a:hover {
   padding-left: 1px;
 }
 
+/* Window Body: white background #ffffff with 3D inset border */
 .desktop-window__body {
   padding: 4px;
-  background: var(--color-window, #c0c0c0);
+  background: #ffffff;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
   box-sizing: border-box;
   max-width: 100%;
 }
 
+/* Floating positions on desktop (> 900px) */
+@media (min-width: 901px) {
+  .desktop-windows-layer {
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Photos window (MEET-MAZEN): upper right of stage */
+  .desktop-window[data-window='photos'] {
+    position: relative;
+    width: min(100%, 340px);
+    margin-right: auto;
+    margin-left: 0;
+  }
+
+  /* Socials window: overlapping bottom-right of photos */
+  .desktop-window[data-window='socials'] {
+    position: relative;
+    margin-top: -100px;
+    margin-left: auto;
+    margin-right: 0;
+    width: min(100%, 280px);
+  }
+
+  /* Projects, writing, rss: centered / layered in windows container with clean bounds, max-height 75vh, scrollable body */
+  .desktop-window[data-window='projects'],
+  .desktop-window[data-window='writing'],
+  .desktop-window[data-window='rss'] {
+    position: relative;
+    margin-top: 1.5rem;
+    margin-inline: auto;
+    width: min(100%, 620px);
+    max-height: 75vh;
+  }
+
+  .desktop-window[data-window='projects']:not([hidden]),
+  .desktop-window[data-window='writing']:not([hidden]),
+  .desktop-window[data-window='rss']:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desktop-window[data-window='projects'] .desktop-window__body,
+  .desktop-window[data-window='writing'] .desktop-window__body,
+  .desktop-window[data-window='rss'] .desktop-window__body {
+    max-height: calc(75vh - 36px);
+    overflow-y: auto;
+    flex: 1;
+  }
+}
+
+/* Mobile responsiveness (<= 900px): Clean vertical stack above the dock */
 @media (max-width: 900px) {
   .desktop-stage {
+    display: flex;
+    flex-direction: column;
     grid-template-columns: 1fr;
     gap: 2rem;
     padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .desktop-canvas-layer {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .desktop-windows-layer {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: auto;
+  }
+
+  .desktop-window {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    max-height: none !important;
+  }
+
+  .desktop-window__body {
+    max-height: 65vh;
+    overflow-y: auto;
   }
 }
