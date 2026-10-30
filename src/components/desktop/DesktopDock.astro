@@ -114,45 +114,57 @@ const { activeAppId, activeAppIds, class: className } = Astro.props;
     align-items: center;
     gap: 6px;
     height: 28px;
-    padding: 2px 8px;
-    background: #c0c0c0;
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #000000;
-    border-bottom: 2px solid #000000;
+    padding: 2px 10px 2px 8px;
+    background: linear-gradient(180deg, #3fa13f 0%, #2e7d32 50%, #1f6b1f 100%);
+    border-top: 1px solid #55c355;
+    border-left: 1px solid #55c355;
+    border-right: 1px solid #145014;
+    border-bottom: 1px solid #145014;
+    border-radius: 0 10px 10px 0;
     box-shadow:
-      inset 1px 1px 0 #dfdfdf,
-      inset -1px -1px 0 #808080;
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      inset 1px 0 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      1px 1px 2px rgba(0, 0, 0, 0.25);
     font-family: var(--font-display, monospace);
     font-weight: 700;
     font-size: 0.8125rem;
-    color: #000000;
+    color: #ffffff;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.6);
     cursor: pointer;
     box-sizing: border-box;
+    transition: filter 0.1s ease;
   }
 
   .dock__start:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.1);
   }
 
   .dock__start:active {
-    border-top: 2px solid #000000;
-    border-left: 2px solid #000000;
-    border-right: 2px solid #ffffff;
-    border-bottom: 2px solid #ffffff;
+    filter: brightness(0.9);
+    border-top: 1px solid #145014;
+    border-left: 1px solid #145014;
+    border-right: 1px solid #55c355;
+    border-bottom: 1px solid #55c355;
     box-shadow:
-      inset 1px 1px 0 #808080,
-      inset -1px -1px 0 #dfdfdf;
-    padding: 3px 7px 1px 9px;
+      inset 0 1px 2px rgba(0, 0, 0, 0.5),
+      inset 0 0 3px rgba(0, 0, 0, 0.4);
+    padding: 3px 9px 1px 9px;
   }
 
   .dock__start:focus-visible {
-    outline: 1px dotted #000000;
+    outline: 1px dotted #ffffff;
     outline-offset: -3px;
+  }
+
+  .dock__start :global(.pixel-icon) {
+    color: #ffffff;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
   }
 
   .dock__start-label {
     letter-spacing: 0.02em;
+    font-style: italic;
   }
 
   .dock__divider {

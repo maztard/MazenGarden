@@ -69,4 +69,28 @@ test.describe('Hybrid Windows XP + 95 Desktop', () => {
     const worldLink = socialsWin.locator('a[href*="thewonderfulworldofmazen"]');
     await expect(worldLink).toBeVisible();
   });
+
+  test('Start button has Windows XP emerald green styling and focused title bars use Luna blue gradient', async ({
+    page,
+  }) => {
+    await page.goto('./');
+
+    const startBtn = page.locator('.dock__start');
+    await expect(startBtn).toBeVisible();
+
+    // Test Start button background style contains emerald / green hues
+    const bgStyle = await startBtn.evaluate((el) => window.getComputedStyle(el).backgroundImage);
+    expect(bgStyle).toMatch(/gradient/i);
+
+    // Test Start button text color is white
+    const colorStyle = await startBtn.evaluate((el) => window.getComputedStyle(el).color);
+    expect(colorStyle).toBe('rgb(255, 255, 255)');
+
+    // Test focused window bar uses Luna blue gradient
+    const focusedBar = page.locator('.desktop-window__bar--focused').first();
+    await expect(focusedBar).toBeVisible();
+    const barBg = await focusedBar.evaluate((el) => window.getComputedStyle(el).backgroundImage);
+    expect(barBg).toMatch(/gradient/i);
+  });
 });
+

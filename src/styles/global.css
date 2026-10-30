@@ -4,8 +4,17 @@
   --color-accent: #a52a2a;
   --color-link: #0000ee;
   --color-window: #c0c0c0;
-  --color-window-bar: #06068e;
+  --color-window-bar: #0055ea;
   --color-card: #fff;
+  /* Windows XP Luna Design Tokens */
+  --color-xp-blue: #0055ea;
+  --color-xp-blue-light: #2080ea;
+  --color-xp-blue-dark: #003db3;
+  --color-xp-green: #388e3c;
+  --color-xp-green-light: #3fa13f;
+  --color-xp-green-dark: #1f6b1f;
+  --color-xp-orange: #f57c00;
+  --color-xp-silver: #ece9d8;
   --font-body: var(--font-geist-pixel), system-ui, sans-serif;
   --font-display: var(--font-dotemp), 'Courier New', monospace;
   --container: 75rem;
@@ -813,10 +822,11 @@ a:hover {
   cursor: grabbing;
 }
 
-/* Window Title Bar: focused navy gradient / #000080 with white text */
+/* Window Title Bar: focused Windows XP Luna Blue gradient with white text */
 .desktop-window__bar--focused {
-  background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  background: linear-gradient(90deg, #0055ea 0%, #2080ea 50%, #0055ea 100%);
   color: #ffffff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
 .desktop-window__title {
