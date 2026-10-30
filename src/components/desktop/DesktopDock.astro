@@ -41,7 +41,7 @@ const { activeAppId, activeAppIds, class: className } = Astro.props;
       title="Current date and time"
       datetime="2026-10-30T12:00"
     >
-      12:00 PM
+      12:00
     </time>
   </div>
 </footer>
@@ -72,8 +72,12 @@ const { activeAppId, activeAppIds, class: className } = Astro.props;
     });
   }
 
-  updateDockClock();
-  setInterval(updateDockClock, 15000);
+  // Avoid duplicate intervals if already initialized
+  if (!(window as unknown as { __dockClockInit?: boolean }).__dockClockInit) {
+    (window as unknown as { __dockClockInit?: boolean }).__dockClockInit = true;
+    updateDockClock();
+    setInterval(updateDockClock, 15000);
+  }
 </script>
 
 <style>

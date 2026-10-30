@@ -1,20 +1,50 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import DesktopWindow from '../components/desktop/DesktopWindow.astro';
+import PixelIcon from '../components/ui/PixelIcon.astro';
 import { withBase } from '../utils/url';
 ---
 
-<BaseLayout
+<DesktopLayout
   title="Page not found · MazenGarden"
   description="The page you were looking for does not exist."
   noindex
 >
-  <section class="section">
-    <div class="container not-found">
-      <h1 class="page-title">404</h1>
-      <p class="page-lede">This page wandered off.</p>
-      <a class="back-link" href={withBase('/')}>
-        ← Back home
-      </a>
-    </div>
-  </section>
-</BaseLayout>
+  <div
+    class="desktop-stage"
+    style="display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 2rem 1rem;"
+  >
+    <DesktopWindow
+      windowId="error-404"
+      windowTitle="Error 404: Page Not Found"
+      icon="close"
+      isOpen={true}
+      style="width: 100%; max-width: 480px; margin: 0 auto;"
+    >
+      <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+          <PixelIcon name="close" size={32} />
+          <div>
+            <h1
+              style="margin: 0 0 0.5rem; font-size: 1.75rem; font-family: var(--font-display, monospace);"
+            >
+              404
+            </h1>
+            <p style="margin: 0; color: #555; line-height: 1.5;">
+              This page wandered off or does not exist on this system.
+            </p>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
+          <a
+            href={withBase('/')}
+            class="dock-button"
+            style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; text-decoration: none; color: #1a1a1a;"
+          >
+            ← Back home
+          </a>
+        </div>
+      </div>
+    </DesktopWindow>
+  </div>
+</DesktopLayout>

@@ -7,6 +7,9 @@ export default defineConfig({
   base: '/MazenGarden',
   trailingSlash: 'always',
   output: 'static',
+  redirects: {
+    '/blog': '/',
+  },
   integrations: [sitemap()],
   fonts: [
     {

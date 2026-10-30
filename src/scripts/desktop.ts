@@ -136,14 +136,6 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
     startY = e.clientY;
     initialLeft = rect.left;
     initialTop = rect.top;
-
-    // Switch to fixed positioning so window can float freely across desktop
-    win.style.position = 'fixed';
-    win.style.left = `${initialLeft}px`;
-    win.style.top = `${initialTop}px`;
-    win.style.margin = '0';
-    win.style.bottom = 'auto';
-    win.style.right = 'auto';
   });
 
   handle.addEventListener('pointermove', (e: PointerEvent) => {
@@ -151,6 +143,18 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
 
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
+
+    // Only switch to fixed positioning once actual drag movement occurs (> 3px)
+    // to prevent reflowing / layout jumps of sibling elements on simple clicks
+    if (win.style.position !== 'fixed') {
+      if (Math.hypot(dx, dy) < 3) return;
+      win.style.position = 'fixed';
+      win.style.left = `${initialLeft}px`;
+      win.style.top = `${initialTop}px`;
+      win.style.margin = '0';
+      win.style.bottom = 'auto';
+      win.style.right = 'auto';
+    }
 
     const newLeft = initialLeft + dx;
     const newTop = initialTop + dy;
@@ -275,6 +279,8 @@ export function initBlogReader(): void {
 
   writingLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
+      // Allow opening in new tab or window via modifier keys
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
       e.preventDefault();
       const slug = link.getAttribute('data-writing-link');
       if (slug) {
@@ -390,9 +396,12 @@ export function initWindowManager(force = false): void {
   // In-window blog reader
   initBlogReader();
 
-  // 24h clock update every 15s
-  updateClock();
-  setInterval(updateClock, 15000);
+  // 24h clock update every 15s (singleton guard)
+  if (!(window as unknown as { __dockClockInit?: boolean }).__dockClockInit) {
+    (window as unknown as { __dockClockInit?: boolean }).__dockClockInit = true;
+    updateClock();
+    setInterval(updateClock, 15000);
+  }
 }
 
 if (typeof document !== 'undefined') {
