@@ -2,9 +2,23 @@
 import { defineConfig, fontProviders } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+const isVercel = Boolean(process.env.VERCEL);
+
+// When deployed to Vercel, the site is hosted at the root ('/').
+// When deployed to GitHub Pages, the site is hosted at the repo subpath ('/MazenGarden').
+const base = process.env.BASE_PATH ?? (isVercel ? '/' : '/MazenGarden');
+
+const site =
+  process.env.SITE_URL ||
+  (isVercel && process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : isVercel && process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'https://maztard.github.io');
+
 export default defineConfig({
-  site: 'https://maztard.github.io',
-  base: '/MazenGarden',
+  site,
+  base,
   trailingSlash: 'always',
   output: 'static',
   redirects: {
