@@ -23,4 +23,28 @@ test.describe('Hybrid Windows XP + 95 Desktop', () => {
     await expect(page.locator('[data-hero-action="folder"]')).toBeVisible();
     await expect(page.locator('[data-hero-action="trash"]')).toBeVisible();
   });
+
+  test('skills section renders interactive square 3D tiles with XP color accents', async ({
+    page,
+  }) => {
+    await page.goto('./');
+
+    const skillsSection = page
+      .locator('#main .about-canvas__section')
+      .filter({ hasText: 'SKILLS' });
+    await expect(skillsSection).toBeVisible();
+
+    const skillTiles = skillsSection.locator('.skill-tile');
+    await expect(skillTiles).toHaveCount(5);
+
+    const categories = ['Tech', 'AI', 'Marketing', 'Psychology', 'Web'];
+    for (const cat of categories) {
+      const tile = skillTiles.filter({ hasText: cat });
+      await expect(tile).toBeVisible();
+    }
+
+    // Ensure no circular pills remain
+    await expect(skillsSection.locator('.about-canvas__badge')).toHaveCount(0);
+    await expect(skillsSection.locator('.about-canvas__skill-badge')).toHaveCount(0);
+  });
 });

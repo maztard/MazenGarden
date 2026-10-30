@@ -5,7 +5,20 @@ interface Props {
 
 const { class: className } = Astro.props;
 
-const skills = ['Tech', 'AI', 'Marketing', 'Psychology', 'Web'];
+interface SkillItem {
+  id: string;
+  badge: string;
+  title: string;
+  desc: string;
+}
+
+const skills: SkillItem[] = [
+  { id: 'tech', badge: 'SYS', title: 'Tech', desc: 'Systems & Code' },
+  { id: 'ai', badge: 'AI', title: 'AI', desc: 'LLMs & Automation' },
+  { id: 'mkt', badge: 'MKT', title: 'Marketing', desc: 'Growth & Brand' },
+  { id: 'psy', badge: 'PSY', title: 'Psychology', desc: 'Human Behavior' },
+  { id: 'web', badge: 'WEB', title: 'Web', desc: 'Fullstack Apps' },
+];
 ---
 
 <section class:list={['about-canvas', className]} aria-label="About Mazen Ragab">
@@ -55,11 +68,15 @@ const skills = ['Tech', 'AI', 'Marketing', 'Psychology', 'Web'];
     <h2 class="about-canvas__section-title" id="about-skills-title">
       SKILLS
     </h2>
-    <div class="about-canvas__badges" role="list" aria-label="Skills">
+    <div class="skills-grid" role="list" aria-label="Skills">
       {skills.map((skill) => (
-        <span class="about-canvas__badge" role="listitem">
-          {skill}
-        </span>
+        <div class={`skill-tile skill-tile--${skill.id}`} role="listitem" tabindex="0">
+          <div class="skill-tile__header">
+            <span class="skill-tile__badge">{skill.badge}</span>
+            <span class="skill-tile__title">{skill.title}</span>
+          </div>
+          <span class="skill-tile__desc">{skill.desc}</span>
+        </div>
       ))}
     </div>
   </div>
@@ -142,30 +159,6 @@ const skills = ['Tech', 'AI', 'Marketing', 'Psychology', 'Web'];
     text-decoration: underline;
     text-underline-offset: 4px;
     text-decoration-thickness: 2px;
-  }
-
-  .about-canvas__badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-  }
-
-  .about-canvas__badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 4.5rem;
-    min-height: 4.5rem;
-    padding: 0.5rem 0.85rem;
-    border-radius: 9999px;
-    background: #f4f4f4;
-    color: #111;
-    border: 2px solid #1a1a1a;
-    box-shadow: 2px 2px 0 #000;
-    font-family: var(--font-display, monospace);
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-align: center;
   }
 
   .about-canvas__education {
