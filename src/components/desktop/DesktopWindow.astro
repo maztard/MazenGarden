@@ -1,0 +1,42 @@
+---
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  windowId: string;
+  windowTitle: string;
+  icon?: string;
+  isOpen?: boolean;
+  class?: string;
+  style?: string;
+}
+
+const { windowId, windowTitle, icon, isOpen = false, class: className, style } = Astro.props;
+---
+
+<div
+  class:list={['desktop-window', className]}
+  data-window={windowId}
+  id={`window-${windowId}`}
+  hidden={!isOpen}
+  style={style}
+  role="dialog"
+  aria-labelledby={`title-${windowId}`}
+>
+  <div class="desktop-window__bar" data-window-handle>
+    {icon && <PixelIcon name={icon} size={16} />}
+    <span class="desktop-window__title" id={`title-${windowId}`}>
+      {windowTitle}
+    </span>
+    <button
+      class="desktop-window__close"
+      type="button"
+      data-window-close
+      aria-label={`Close ${windowTitle}`}
+    >
+      <PixelIcon name="close" size={12} />
+    </button>
+  </div>
+  <div class="desktop-window__body">
+    <slot />
+  </div>
+</div>
