@@ -1,17 +1,109 @@
 /**
  * Win95 Single-Page Desktop Window Manager
  * Handles window dragging, click-to-front z-index stacking,
- * dock toggle buttons, close buttons, and in-window blog reader navigation.
+ * dock toggle buttons, close buttons, 24h clock, and in-window blog reader navigation.
  */
 
 let highestZ = 100;
+let isInitialized = false;
 
-function bringToFront(windowEl: HTMLElement): void {
-  highestZ += 1;
-  windowEl.style.zIndex = String(highestZ);
+function getBasePath(): string {
+  let base = '/';
+  if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
+    base = import.meta.env.BASE_URL;
+  } else if (typeof window !== 'undefined' && window.location.pathname.startsWith('/MazenGarden')) {
+    base = '/MazenGarden/';
+  }
+  return base.endsWith('/') ? base : `${base}/`;
 }
 
-function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
+export function isDragDisabled(): boolean {
+  if (typeof window === 'undefined') return true;
+  const isSmallScreen = window.innerWidth <= 900 || window.matchMedia('(max-width: 900px)').matches;
+  const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  return isSmallScreen || isCoarsePointer;
+}
+
+export function bringToFront(windowEl: HTMLElement): void {
+  highestZ += 1;
+  windowEl.style.zIndex = String(highestZ);
+
+  // Focus title bar of current window, unfocus others
+  const allBars = document.querySelectorAll<HTMLElement>(
+    '.desktop-window__bar, [data-window-handle]',
+  );
+  allBars.forEach((bar) => bar.classList.remove('desktop-window__bar--focused'));
+
+  const currentBar = windowEl.querySelector<HTMLElement>(
+    '.desktop-window__bar, [data-window-handle]',
+  );
+  if (currentBar) {
+    currentBar.classList.add('desktop-window__bar--focused');
+  }
+}
+
+export function updateTopmostFocus(): void {
+  const openWindows = Array.from(document.querySelectorAll<HTMLElement>('[data-window]')).filter(
+    (w) => !w.hidden,
+  );
+
+  const allBars = document.querySelectorAll<HTMLElement>(
+    '.desktop-window__bar, [data-window-handle]',
+  );
+  allBars.forEach((b) => b.classList.remove('desktop-window__bar--focused'));
+
+  if (openWindows.length === 0) return;
+
+  let topmost = openWindows[0];
+  let maxZ = parseInt(topmost.style.zIndex || '0', 10);
+
+  for (let i = 1; i < openWindows.length; i++) {
+    const z = parseInt(openWindows[i].style.zIndex || '0', 10);
+    if (z > maxZ) {
+      maxZ = z;
+      topmost = openWindows[i];
+    }
+  }
+
+  const topBar = topmost.querySelector<HTMLElement>('.desktop-window__bar, [data-window-handle]');
+  if (topBar) {
+    topBar.classList.add('desktop-window__bar--focused');
+  }
+}
+
+export function isWindowTopmost(win: HTMLElement): boolean {
+  if (win.hidden) return false;
+  const currentZ = parseInt(win.style.zIndex || '0', 10);
+  const otherOpenWindows = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-window]'),
+  ).filter((w) => w !== win && !w.hidden);
+
+  for (const other of otherOpenWindows) {
+    const otherZ = parseInt(other.style.zIndex || '0', 10);
+    if (otherZ >= currentZ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function closeWindow(win: HTMLElement): void {
+  win.hidden = true;
+  const windowId = win.getAttribute('data-window');
+  if (windowId) {
+    const dockBtn = document.querySelector<HTMLElement>(`[data-dock-toggle="${windowId}"]`);
+    if (dockBtn) {
+      dockBtn.classList.remove('dock-button--active');
+    }
+  }
+  const bar = win.querySelector<HTMLElement>('.desktop-window__bar, [data-window-handle]');
+  if (bar) {
+    bar.classList.remove('desktop-window__bar--focused');
+  }
+  updateTopmostFocus();
+}
+
+export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
   let isDragging = false;
   let startX = 0;
   let startY = 0;
@@ -19,14 +111,25 @@ function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
   let initialTop = 0;
 
   handle.addEventListener('pointerdown', (e: PointerEvent) => {
-    // If clicked on close button or any interactive element inside handle, don't drag
-    if ((e.target as HTMLElement).closest('[data-window-close]')) {
+    // Disabled on screens <= 900px or coarse pointers
+    if (isDragDisabled() || e.pointerType === 'touch') {
+      return;
+    }
+
+    // Don't drag if interacting with controls inside handle (e.g. close button)
+    if (
+      (e.target as HTMLElement).closest('[data-window-close], button, a, input, select, textarea')
+    ) {
       return;
     }
 
     isDragging = true;
     bringToFront(win);
-    handle.setPointerCapture(e.pointerId);
+    try {
+      handle.setPointerCapture(e.pointerId);
+    } catch {
+      // Ignore pointer capture errors in testing/virtual environments
+    }
 
     const rect = win.getBoundingClientRect();
     startX = e.clientX;
@@ -39,6 +142,8 @@ function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
     win.style.left = `${initialLeft}px`;
     win.style.top = `${initialTop}px`;
     win.style.margin = '0';
+    win.style.bottom = 'auto';
+    win.style.right = 'auto';
   });
 
   handle.addEventListener('pointermove', (e: PointerEvent) => {
@@ -51,13 +156,25 @@ function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
     const newTop = initialTop + dy;
 
     const winWidth = win.offsetWidth;
+    const winHeight = win.offsetHeight;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
-    // Boundary clamping: keep window on-screen and above the bottom dock
-    const dockHeight = 40;
-    const clampedLeft = Math.max(0, Math.min(newLeft, viewportWidth - winWidth));
-    const clampedTop = Math.max(0, Math.min(newTop, viewportHeight - dockHeight - 30));
+    const dockEl = document.querySelector<HTMLElement>(
+      '.dock, [role="region"][aria-label="Taskbar"]',
+    );
+    const dockHeight = dockEl ? dockEl.getBoundingClientRect().height : 36;
+
+    // Clamped so at least 80px remains on screen horizontally
+    const minLeft = Math.min(0, 80 - winWidth);
+    const maxLeft = Math.max(minLeft, viewportWidth - 80);
+
+    // Stays on screen at top (>= 0) and stays above dock at bottom
+    const minTop = 0;
+    const maxTop = Math.max(0, viewportHeight - dockHeight - winHeight);
+
+    const clampedLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+    const clampedTop = Math.max(minTop, Math.min(newTop, maxTop));
 
     win.style.left = `${clampedLeft}px`;
     win.style.top = `${clampedTop}px`;
@@ -77,7 +194,37 @@ function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void {
   handle.addEventListener('pointercancel', stopDragging);
 }
 
-function initBlogReader(): void {
+export function updateClock(): void {
+  const clockElements = document.querySelectorAll<HTMLElement>('[data-dock-clock], [data-clock]');
+  if (!clockElements.length) return;
+
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
+
+  const fullDateString = now.toLocaleDateString([], {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const fullLabel = `${fullDateString} ${timeString}`;
+
+  clockElements.forEach((el) => {
+    el.textContent = timeString;
+    el.setAttribute('title', fullLabel);
+    el.setAttribute('aria-label', fullLabel);
+    if (el.tagName.toLowerCase() === 'time') {
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      el.setAttribute('datetime', `${year}-${month}-${day}T${timeString}`);
+    }
+  });
+}
+
+export function initBlogReader(): void {
   const writingLinks = document.querySelectorAll<HTMLAnchorElement>('[data-writing-link]');
   const backButtons = document.querySelectorAll<HTMLElement>('[data-writing-back]');
   const writingList = document.querySelector<HTMLElement>('[data-writing-list]');
@@ -100,14 +247,15 @@ function initBlogReader(): void {
 
     writingPosts.forEach((post) => {
       const postSlug = post.getAttribute('data-writing-post');
-      post.hidden = postSlug !== slug;
-      if (postSlug === slug) {
+      const isTarget = postSlug === slug;
+      post.hidden = !isTarget;
+      if (isTarget) {
         post.scrollTop = 0;
       }
     });
 
     if (updateHistory && url) {
-      history.pushState({ slug }, '', url);
+      history.pushState(null, '', url);
     }
   }
 
@@ -121,9 +269,7 @@ function initBlogReader(): void {
     }
 
     if (updateHistory) {
-      const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-      const rootUrl = canonical?.href || '/MazenGarden/';
-      history.pushState({}, '', rootUrl);
+      history.pushState(null, '', getBasePath());
     }
   }
 
@@ -155,16 +301,27 @@ function initBlogReader(): void {
   });
 }
 
-export function initWindowManager(): void {
+export function initWindowManager(force = false): void {
+  if (isInitialized && !force) return;
+  isInitialized = true;
+
   const windows = Array.from(document.querySelectorAll<HTMLElement>('[data-window]'));
   const dockButtons = Array.from(document.querySelectorAll<HTMLElement>('[data-dock-toggle]'));
 
-  // Initialize z-index and click-to-front
+  // Initialize z-index and click/focus-to-front
   windows.forEach((win, index) => {
-    win.style.zIndex = String(100 + index);
-    highestZ = Math.max(highestZ, 100 + index);
+    const baseZ = 100 + index;
+    win.style.zIndex = String(baseZ);
+    highestZ = Math.max(highestZ, baseZ);
 
-    win.addEventListener('pointerdown', () => {
+    win.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('[data-window-close]')) {
+        return;
+      }
+      bringToFront(win);
+    });
+
+    win.addEventListener('focusin', () => {
       bringToFront(win);
     });
 
@@ -177,17 +334,14 @@ export function initWindowManager(): void {
   // Close buttons
   const closeButtons = document.querySelectorAll<HTMLElement>('[data-window-close]');
   closeButtons.forEach((btn) => {
+    btn.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+    });
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const win = btn.closest<HTMLElement>('[data-window]');
-      if (!win) return;
-      win.hidden = true;
-      const windowId = win.getAttribute('data-window');
-      if (windowId) {
-        const dockBtn = document.querySelector<HTMLElement>(`[data-dock-toggle="${windowId}"]`);
-        if (dockBtn) {
-          dockBtn.classList.remove('dock-button--active');
-        }
+      if (win) {
+        closeWindow(win);
       }
     });
   });
@@ -201,28 +355,49 @@ export function initWindowManager(): void {
       if (!win) return;
 
       if (win.hidden) {
+        // Closed -> open and bring to front
         win.hidden = false;
         dockBtn.classList.add('dock-button--active');
         bringToFront(win);
+      } else if (isWindowTopmost(win)) {
+        // Open and topmost -> close
+        closeWindow(win);
       } else {
-        const currentZ = parseInt(win.style.zIndex || '0', 10);
-        if (currentZ < highestZ) {
-          bringToFront(win);
-        } else {
-          win.hidden = true;
-          dockBtn.classList.remove('dock-button--active');
-        }
+        // Open and behind -> bring to front
+        bringToFront(win);
+        dockBtn.classList.add('dock-button--active');
       }
     });
   });
 
+  // Responsive reset on resize: clear fixed positioning if <= 900px
+  window.addEventListener('resize', () => {
+    if (isDragDisabled()) {
+      windows.forEach((win) => {
+        win.style.position = '';
+        win.style.left = '';
+        win.style.top = '';
+        win.style.margin = '';
+        win.style.bottom = '';
+        win.style.right = '';
+      });
+    }
+  });
+
+  // Initial title bar focus
+  updateTopmostFocus();
+
   // In-window blog reader
   initBlogReader();
+
+  // 24h clock update every 15s
+  updateClock();
+  setInterval(updateClock, 15000);
 }
 
 if (typeof document !== 'undefined') {
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initWindowManager);
+    document.addEventListener('DOMContentLoaded', () => initWindowManager());
   } else {
     initWindowManager();
   }

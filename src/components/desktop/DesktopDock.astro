@@ -55,6 +55,7 @@ const { activeAppId, activeAppIds, class: className } = Astro.props;
     const timeString = now.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
+      hour12: false,
     });
     const fullDateString = now.toLocaleDateString([], {
       weekday: 'long',
