@@ -1,0 +1,103 @@
+---
+import type { AppDefinition } from '../../data/apps';
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  app: AppDefinition;
+  isActive?: boolean;
+  class?: string;
+}
+
+const { app, isActive = false, class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['dock-button', { 'dock-button--active': isActive }, className]}
+  data-dock-toggle={app.id}
+  aria-label={app.label}
+  title={app.label}
+>
+  <PixelIcon name={app.icon} size={16} />
+  <span class="dock-button__label">{app.label}</span>
+</button>
+
+<style>
+  .dock-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 2px 8px;
+    background-color: var(--color-window, #c0c0c0);
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow:
+      inset 1px 1px 0 #dfdfdf,
+      inset -1px -1px 0 #808080;
+    font-family: var(--font-display, monospace);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text, #000000);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 140px;
+    box-sizing: border-box;
+    transition: background-color 0.1s;
+  }
+
+  .dock-button:hover {
+    filter: brightness(1.05);
+  }
+
+  .dock-button:focus-visible {
+    outline: 1px dotted #000000;
+    outline-offset: -3px;
+  }
+
+  .dock-button:active,
+  .dock-button--active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow:
+      inset 1px 1px 0 #808080,
+      inset -1px -1px 0 #dfdfdf;
+    background-color: #dfdfdf;
+    padding: 3px 7px 1px 9px;
+    font-weight: 700;
+  }
+
+  .dock-button__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .dock-button {
+      padding: 2px 6px;
+      max-width: 100px;
+      font-size: 0.7rem;
+      gap: 4px;
+    }
+  }
+
+  @media (max-width: 440px) {
+    .dock-button {
+      padding: 2px 6px;
+      max-width: 32px;
+      justify-content: center;
+    }
+
+    .dock-button__label {
+      display: none;
+    }
+  }
+</style>

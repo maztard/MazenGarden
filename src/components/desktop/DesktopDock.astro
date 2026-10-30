@@ -1,0 +1,227 @@
+---
+import { apps } from '../../data/apps';
+import DockButton from './DockButton.astro';
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  activeAppId?: string;
+  class?: string;
+}
+
+const { activeAppId, class: className } = Astro.props;
+---
+
+<footer class:list={['dock', className]} role="region" aria-label="Taskbar">
+  <div class="dock__start-wrapper">
+    <button class="dock__start" type="button" aria-label="Start menu">
+      <PixelIcon name="flower" size={16} />
+      <span class="dock__start-label">Start</span>
+    </button>
+  </div>
+
+  <div class="dock__divider" aria-hidden="true"></div>
+
+  <div class="dock__apps" role="toolbar" aria-label="Running applications">
+    {apps.map((app) => (
+      <DockButton
+        app={app}
+        isActive={activeAppId !== undefined ? activeAppId === app.id : app.defaultOpen}
+      />
+    ))}
+  </div>
+
+  <div class="dock__tray" role="region" aria-label="System tray">
+    <time
+      class="dock__clock"
+      data-dock-clock
+      data-clock
+      title="Current date and time"
+      datetime="2026-10-30T12:00"
+    >
+      12:00 PM
+    </time>
+  </div>
+</footer>
+
+<script>
+  function updateDockClock() {
+    const clockElements = document.querySelectorAll<HTMLElement>('[data-dock-clock]');
+    if (!clockElements.length) return;
+
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const fullDateString = now.toLocaleDateString([], {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    clockElements.forEach((el) => {
+      el.textContent = timeString;
+      const fullLabel = `${fullDateString} ${timeString}`;
+      el.setAttribute('title', fullLabel);
+      el.setAttribute('aria-label', fullLabel);
+    });
+  }
+
+  updateDockClock();
+  setInterval(updateDockClock, 15000);
+</script>
+
+<style>
+  .dock {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    height: 36px;
+    padding: 3px 6px;
+    background-color: var(--color-window, #c0c0c0);
+    border-top: 2px solid #ffffff;
+    border-bottom: 2px solid #000000;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .dock__start-wrapper {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dock__start {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 2px 8px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow:
+      inset 1px 1px 0 #dfdfdf,
+      inset -1px -1px 0 #808080;
+    font-family: var(--font-display, monospace);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    color: #000000;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  .dock__start:hover {
+    filter: brightness(1.05);
+  }
+
+  .dock__start:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow:
+      inset 1px 1px 0 #808080,
+      inset -1px -1px 0 #dfdfdf;
+    padding: 3px 7px 1px 9px;
+  }
+
+  .dock__start:focus-visible {
+    outline: 1px dotted #000000;
+    outline-offset: -3px;
+  }
+
+  .dock__start-label {
+    letter-spacing: 0.02em;
+  }
+
+  .dock__divider {
+    width: 2px;
+    height: 22px;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    flex-shrink: 0;
+    margin-inline: 1px;
+  }
+
+  .dock__apps {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dock__apps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dock__tray {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 2px 8px;
+    background-color: var(--color-window, #c0c0c0);
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  .dock__clock {
+    font-family: var(--font-display, monospace);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #000000;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .dock {
+      padding: 2px 4px;
+      gap: 4px;
+      height: 34px;
+    }
+
+    .dock__start {
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      gap: 4px;
+    }
+
+    .dock__tray {
+      padding: 2px 6px;
+    }
+
+    .dock__clock {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .dock__start-label {
+      display: none;
+    }
+
+    .dock__start {
+      padding: 2px 4px;
+    }
+  }
+</style>
