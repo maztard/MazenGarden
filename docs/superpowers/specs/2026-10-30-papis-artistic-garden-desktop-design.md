@@ -1,87 +1,139 @@
-# Papi’s Artistic Garden: retro desktop redesign
+# Papi’s Artistic Garden: Retro Desktop & Portfolio Design Spec
 
 **Date:** 2026-10-30  
-**Status:** Approved — 2026-10-30  
+**Status:** Proposed — awaiting user approval  
 **Scope:** Project  
-**Repo:** `D:\papis-artistic-garden` & `D:\personalweb-copy`
+**Inspiration:** Sophie Van Schil Graphic Portfolio 2024 (Behance) + Interactive Windows 95 Desktop  
+**Repositories:** `D:\papis-artistic-garden` & `D:\personalweb-copy`
 
-## Intent
+---
 
-Redesign the personal site into a warm retro desktop inspired by Windows 95 aesthetic (matching the reference design).
+## 1. Vision & Intent
 
-The landing view features:
-1. **Left Canvas (Static About Section):** The "About Me!" content is hardcoded directly onto the page background—never inside a window, never closes, and is always visible as the base anchor of the site.
-2. **Right Floating Windows:** Real HTML `div`s (not iframes) with classic Win95 styling (navy title bar, close `[X]`, 3D bevels, drop shadow) floating on the desktop. On landing, a `MEET-MAZEN` photo window and an overlapping `SOCIALS` window are open.
-3. **Bottom Win95 Taskbar Dock:** A bottom-center floating dock with pixel app icons and a real-time digital clock that toggles and brings forward windows (`MEET-MAZEN`, `SOCIALS`, `PROJECTS`, `WRITING`, `RSS`).
-4. **Blended SEO & In-Page Blog Architecture:**
-   - On the desktop, opening the Writing window and clicking an article displays the post directly inside that window with "← Back to articles" and updates the URL bar via `history.pushState`.
-   - Astro also pre-renders `/blog/[slug]/` at build time so search engine crawlers, RSS feeds, and direct URL visitors receive the full server-rendered article HTML in the desktop shell.
-   - **Zero iframes** across the entire project.
+A blended retro web experience combining the visual graphic design of a 90s OS portfolio (inspired by Sophie Van Schil's Behance design) with a fully interactive Windows 95 desktop:
 
-## Goals
+1. **Top Landscape Hero Banner:**
+   - Dithered pastoral landscape wallpaper (blue sky, grassy hills).
+   - Retro desktop icons on top-left (Folder, Computer, Recycle Bin).
+   - Centered headline: **PORTFOLIO** / **PAPI’S ARTISTIC GARDEN** by Mazen Ragab.
+   - Retro Win95 system strip beneath the landscape (`Start`, address/path strip, clock).
 
-- Static About section anchored on the page canvas on the left: giant pixel "About", offset red "Me!", name, and 5 bio paragraphs.
-- Pure HTML `div` window system: draggable by titlebar, stackable with click-to-front, and closable with `[X]`.
-- Landing composition matching reference screenshot: left About canvas, right `MEET-MAZEN` photo window, overlapping `SOCIALS` window.
-- Bottom Win95 taskbar dock with pixel icons for Photos, Socials, Projects, Writing, RSS, and a live clock.
-- In-window blog reading for visitors + static `/blog/[slug]/` routes for Google/crawlers and RSS subscribers.
-- Zero iframes, zero cross-origin messaging, zero nested iframe scrolling issues.
-- Responsive mobile fallback: below 900px, content flows in a clean document stack above the dock.
-- Full type-safety, build verification, and Playwright E2E test coverage.
+2. **The About Me Canvas (Permanent Base Layer):**
+   - Positioned on the left side of the page, directly on the canvas (never in a window, never closes).
+   - Typography: Giant pixel `about` on line 1, offset red `me!` on line 2 (Dotemp font).
+   - Name: `Mazen Ragab aka (Maztardoo)` in italic/bold accent.
+   - Bio: The 5 personal bio paragraphs.
+   - **SKILLS** section: Circular retro badges for Tech, AI, Marketing, Psychology, Web.
+   - **EDUCATION** section: New Cairo STEM School (G12).
 
-## Non-goals
+3. **Interactive Floating Win95 Windows (Right & Foreground):**
+   - Real HTML `div`s with authentic Windows 95 chrome: navy title bar, white text, 3D outer bevels, inset border, and close `[X]` buttons.
+   - **Zero iframes:** Content is rendered directly as component slots.
+   - **Default Open on Landing:**
+     - `MEET-MAZEN`: Window on the right showing Mazen's portrait photo in retro frame.
+     - `SOCIALS`: Floating window overlapping the photo's bottom-right corner with links to Instagram (`@papisartisticgarden`), GitHub (`maztard`), and email (`mazenra100@gmail.com`).
+   - **On-Demand Windows (Opened via Dock or Link):**
+     - `PROJECTS`: Win95 browser frame showcasing EmadEats Project, BuggyEyes, and Sudany.
+     - `WRITING`: Article list with instant in-window article reading and `history.pushState` URL syncing.
+     - `RSS`: Feed URL box with one-click copy button.
 
-- No iframes or `/apps/*` sub-documents.
-- No window resizing or minimize/maximize controls.
-- No third-party analytics or server runtimes (pure static Astro output on GitHub Pages).
+4. **Floating Bottom Win95 Taskbar Dock:**
+   - Fixed at bottom-center with Win95 bevels and drop shadow.
+   - Left `Start` button, app toggle buttons (`Photos`, `Socials`, `Projects`, `Writing`, `RSS`) with pixel icons, and live digital clock.
+   - Clicking an app button toggles the window open/closed or brings it to the front.
 
-## Architecture & Layout
+5. **Blended SEO & Direct Deep Links:**
+   - Static Astro output pre-renders `/blog/[slug]/` routes.
+   - Search engine crawlers and RSS subscribers accessing `/blog/[slug]/` receive the full desktop with the article pre-opened as server-rendered HTML.
+   - Internal site navigation remains instant in-page DOM swapping with no page reloads.
 
-### 1. Page Background Canvas (Left)
-- Markup: `<section class="desktop__about">` directly inside the desktop main container.
-- Content:
-  - Header: `About` + `<span class="about__accent">Me!</span>` with clamp offset.
-  - Name: `Mazen Ragab aka (Maztardoo)`.
-  - Bio: The 5 personal bio paragraphs.
-  - Social badges / quick links.
+---
 
-### 2. Window System (`DesktopWindow.astro`)
-- Structure:
-  ```html
-  <div class="desktop-window" data-window="photos" id="window-photos">
-    <div class="desktop-window__bar" data-window-handle>
-      <PixelIcon name="photos" size={16} />
-      <span class="desktop-window__title">MEET-MAZEN</span>
-      <button type="button" class="desktop-window__close" data-window-close aria-label="Close">
-        <PixelIcon name="close" size={12} />
-      </button>
-    </div>
-    <div class="desktop-window__body">
-      <slot />
-    </div>
-  </div>
-  ```
-- Windows:
-  - `MEET-MAZEN` (Photos): 2×2 photo grid or portrait featuring Mazen. Open on load.
-  - `SOCIALS` (Contact): Instagram, GitHub, email links. Open on load overlapping photos.
-  - `PROJECTS`: EmadEats Project, BuggyEyes, Sudany.
-  - `WRITING`: Article list; in-window article reader with "← Back to articles".
-  - `RSS`: Feed URL with one-click copy button.
+## 2. Goals & Non-Goals
 
-### 3. Bottom Taskbar Dock (`DesktopDock.astro`)
-- Positioned fixed bottom-center.
-- Contains buttons for Photos, Socials, Projects, Writing, RSS, plus live 24h digital clock.
-- Clicking a dock button toggles the window visibility or raises it to front if already open.
+### Goals
+- Authentic retro aesthetic matching the Behance reference: landscape banner, desktop icons, skills/education lists, and overlapping window composition.
+- Static About section anchored to page canvas on the left.
+- Interactive HTML `div` windows: draggable title bars, click-to-front z-index stacking, and close `[X]` buttons.
+- Bottom Win95 taskbar dock with clock and app toggles.
+- Zero iframes.
+- Mobile responsive: below 900px, elements stack vertically in clean document flow above the fixed dock.
+- Full SEO discoverability and RSS feed integrity.
+- 100% passing Playwright test suite and typechecks.
 
-### 4. Blog & SEO Blend
-- `src/pages/index.astro`: Default homepage desktop.
-- `src/pages/blog/[slug].astro`: Renders the desktop with the Writing window pre-opened displaying the specific post.
-- RSS feed at `/rss.xml` links to `/blog/[slug]/`.
-- Sitemap includes `/` and all `/blog/[slug]/` routes.
+### Non-Goals
+- No client-side SPA routing library (pure vanilla TypeScript helper).
+- No audio sound effects or theme toggles.
+- No window resizing or minimize/maximize animations.
 
-### 5. Client Script (`desktop.ts`)
-- Stacking: Click/focus raises window z-index.
-- Dragging: Pointer capture on `[data-window-handle]` with boundary clamps.
-- Toggling: Dock button clicks toggle `hidden` attribute and raise window.
-- Blog post viewer: Intercepts post link clicks inside the Writing window to swap article content in-place and update `history.pushState`.
-- Clock: Ticks every 15s in 24h format with localized full-date label.
+---
+
+## 3. Component Architecture
+
+```
+src/
+├── components/
+│   ├── apps/
+│   │   ├── AboutCanvas.astro        # Static About, skills badges, education on canvas
+│   │   ├── MeetMazenWindow.astro    # Photo window content (Mazen's portrait)
+│   │   ├── SocialsWindow.astro      # Social links window content (IG, GitHub, email)
+│   │   ├── ProjectsContent.astro    # Projects showcase window content
+│   │   ├── WritingContent.astro     # Blog list + in-window post viewer
+│   │   └── RssContent.astro         # RSS subscription and copy button
+│   ├── desktop/
+│   │   ├── DesktopBanner.astro      # Top retro landscape banner with title and desktop icons
+│   │   ├── DesktopDock.astro        # Fixed bottom Win95 taskbar with Start and clock
+│   │   ├── DockButton.astro         # Single dock icon button
+│   │   └── DesktopWindow.astro      # Win95 window div wrapper with handle, title, close [X]
+│   └── ui/
+│       ├── PixelIcon.astro          # 16x16 pixel coordinate SVG renderer
+│       └── PixelEmoji.astro         # 18x18 pixel emoji renderer
+├── data/
+│   ├── apps.ts                      # Dock and window definitions
+│   ├── icons.ts                     # Pixel icon coordinate grids
+│   └── photos.ts                    # Photos data (Mazen's portrait + placeholders)
+├── layouts/
+│   └── DesktopLayout.astro          # Root layout (head, fonts, favicon, dock, script)
+├── pages/
+│   ├── index.astro                  # Main single-page retro desktop
+│   ├── blog/
+│   │   └── [slug].astro             # Canonical SEO routes pre-opening Writing window
+│   ├── 404.astro                    # Custom retro 404 desktop
+│   └── rss.xml.ts                   # RSS 2.0 endpoint
+├── scripts/
+│   └── desktop.ts                   # Client script: drag, stacking, dock toggles, clock, post reader
+└── styles/
+    └── global.css                   # Complete styling: Win95 chrome, bevels, canvas, layout, responsive
+```
+
+---
+
+## 4. Window Behaviors & State Management
+
+- **Initial State:**
+  - `MEET-MAZEN` (Photos): Open (`hidden: false`), positioned upper right.
+  - `SOCIALS`: Open (`hidden: false`), positioned overlapping bottom-right of `MEET-MAZEN`.
+  - `PROJECTS`: Closed (`hidden: true`).
+  - `WRITING`: Closed on `/` (`hidden: true`); Open on `/blog/[slug]/`.
+  - `RSS`: Closed (`hidden: true`).
+- **Dock Click:**
+  - If window is closed $\rightarrow$ Open it and bring to front (`z-index`).
+  - If window is open and topmost $\rightarrow$ Close it (toggle).
+  - If window is open but behind $\rightarrow$ Bring to front.
+- **Dragging:**
+  - Pointerdown on `[data-window-handle]` captures pointer.
+  - Clamped so at least 80px remains on screen.
+  - Disabled on mobile ($\le$ 900px) and coarse pointers.
+- **Blog Reading:**
+  - In `WritingContent.astro`: Clicking an article title toggles post view inline and sets `history.pushState(null, '', postUrl)`.
+  - Clicking "← Back to articles" reverts to the list and sets `history.pushState(null, '', withBase('/'))`.
+
+---
+
+## 5. Responsive Behavior ($\le$ 900px)
+
+- Desktop banner scales gracefully.
+- Left About canvas and right windows stack in clean vertical document flow.
+- Window absolute positioning and drag are disabled; windows become full-width static cards.
+- Bottom dock remains fixed and accessible.
+- Zero horizontal overflow down to 320px.
