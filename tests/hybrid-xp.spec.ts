@@ -47,4 +47,26 @@ test.describe('Hybrid Windows XP + 95 Desktop', () => {
     await expect(skillsSection.locator('.about-canvas__badge')).toHaveCount(0);
     await expect(skillsSection.locator('.about-canvas__skill-badge')).toHaveCount(0);
   });
+
+  test('socials window showcases Mazen three Instagram accounts and branding labels', async ({
+    page,
+  }) => {
+    await page.goto('./');
+
+    const socialsWin = page.locator('#window-socials');
+    await expect(socialsWin).toBeVisible();
+
+    // 1st: @papisartisticgarden
+    const papisLink = socialsWin.locator('a[href*="papisartisticgarden"]');
+    await expect(papisLink).toBeVisible();
+
+    // Main: @bigdaddymazen
+    const bigdaddyLink = socialsWin.locator('a[href*="bigdaddymazen"]');
+    await expect(bigdaddyLink).toBeVisible();
+    await expect(bigdaddyLink.locator('.social-link__tag')).toContainText(/Main|Personal/i);
+
+    // 3rd: @thewonderfulworldofmazen
+    const worldLink = socialsWin.locator('a[href*="thewonderfulworldofmazen"]');
+    await expect(worldLink).toBeVisible();
+  });
 });

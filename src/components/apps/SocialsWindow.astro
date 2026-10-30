@@ -1,5 +1,10 @@
 ---
 import PixelIcon from '../ui/PixelIcon.astro';
+import {
+  INSTAGRAM_PAPIS_URL,
+  INSTAGRAM_MAIN_URL,
+  INSTAGRAM_WORLD_URL,
+} from '../../consts';
 
 interface Props {
   class?: string;
@@ -7,18 +12,47 @@ interface Props {
 
 const { class: className } = Astro.props;
 
-const socials = [
+interface SocialLinkItem {
+  name: string;
+  icon: string;
+  label: string;
+  tag: string;
+  url: string;
+  external: boolean;
+  featured?: boolean;
+}
+
+const socials: SocialLinkItem[] = [
   {
     name: 'Instagram',
     icon: 'instagram',
     label: '@papisartisticgarden',
-    url: 'https://www.instagram.com/papisartisticgarden/',
+    tag: 'Creative Garden, Art & Code',
+    url: INSTAGRAM_PAPIS_URL || 'https://www.instagram.com/papisartisticgarden/',
+    external: true,
+  },
+  {
+    name: 'Instagram',
+    icon: 'instagram',
+    label: '@bigdaddymazen',
+    tag: 'Main / Personal Brand',
+    url: INSTAGRAM_MAIN_URL,
+    external: true,
+    featured: true,
+  },
+  {
+    name: 'Instagram',
+    icon: 'instagram',
+    label: '@thewonderfulworldofmazen',
+    tag: 'Visual World & Photography',
+    url: INSTAGRAM_WORLD_URL,
     external: true,
   },
   {
     name: 'GitHub',
     icon: 'github',
     label: 'maztard',
+    tag: 'Code Repositories',
     url: 'https://github.com/maztard',
     external: true,
   },
@@ -26,6 +60,7 @@ const socials = [
     name: 'Email',
     icon: 'contact',
     label: 'mazenra100@gmail.com',
+    tag: 'Direct Inquiries',
     url: 'mailto:mazenra100@gmail.com',
     external: false,
   },
@@ -38,7 +73,11 @@ const socials = [
       <li class="socials-item">
         <a
           href={item.url}
-          class="socials-link"
+          class:list={[
+            'socials-link',
+            'social-link',
+            item.featured && 'social-link--featured',
+          ]}
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener noreferrer' : undefined}
         >
@@ -46,8 +85,16 @@ const socials = [
             <PixelIcon name={item.icon} size={20} />
           </span>
           <span class="socials-content">
-            <span class="socials-name">{item.name}</span>
+            <span class="socials-header">
+              <span class="socials-name">{item.name}</span>
+              {item.featured && (
+                <span class="socials-badge" aria-label="Main Brand">
+                  ★ MAIN
+                </span>
+              )}
+            </span>
             <span class="socials-label">{item.label}</span>
+            <span class="socials-tag social-link__tag">{item.tag}</span>
           </span>
           {item.external && (
             <span class="socials-arrow" aria-hidden="true">
@@ -111,6 +158,33 @@ const socials = [
     padding-left: calc(0.75rem + 1px);
   }
 
+  /* Featured main personal brand link */
+  .social-link--featured {
+    background: #fffdf2;
+    border-top: 2px solid #fff5cc;
+    border-left: 2px solid #fff5cc;
+    border-right: 2px solid #b38600;
+    border-bottom: 2px solid #b38600;
+    box-shadow:
+      inset 1px 1px 0 #ffe082,
+      inset -1px -1px 0 #7a5c00;
+  }
+
+  .social-link--featured:hover {
+    background: #fff8db;
+    color: #995c00;
+  }
+
+  .social-link--featured:active {
+    border-top: 2px solid #7a5c00;
+    border-left: 2px solid #7a5c00;
+    border-right: 2px solid #fff5cc;
+    border-bottom: 2px solid #fff5cc;
+    box-shadow:
+      inset 1px 1px 0 #7a5c00,
+      inset -1px -1px 0 #ffe082;
+  }
+
   .socials-icon {
     display: flex;
     align-items: center;
@@ -118,6 +192,11 @@ const socials = [
     width: 24px;
     height: 24px;
     color: #1a1a1a;
+    flex-shrink: 0;
+  }
+
+  .social-link--featured .socials-icon {
+    color: #b37400;
   }
 
   .socials-content {
@@ -127,25 +206,66 @@ const socials = [
     min-width: 0;
   }
 
+  .socials-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
   .socials-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #666;
     font-weight: 700;
   }
 
+  .socials-badge {
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #7a5200;
+    background: #ffe082;
+    padding: 1px 5px;
+    border: 1px solid #c99700;
+    text-shadow: none;
+    line-height: 1.1;
+  }
+
   .socials-label {
     font-family: var(--font-display, monospace);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
+  .social-link--featured .socials-label {
+    color: #000000;
+    font-weight: 700;
+  }
+
+  .socials-tag {
+    font-size: 0.75rem;
+    color: #555555;
+    margin-top: 0.1rem;
+    line-height: 1.25;
+  }
+
+  .social-link--featured .socials-tag {
+    color: #5d4300;
+    font-weight: 600;
+  }
+
   .socials-arrow {
     font-size: 0.9rem;
     color: #888;
+    flex-shrink: 0;
+  }
+
+  .social-link--featured .socials-arrow {
+    color: #b37400;
+    font-weight: 700;
   }
 </style>
