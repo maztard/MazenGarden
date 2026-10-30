@@ -1,0 +1,420 @@
+---
+import PixelIcon from '../ui/PixelIcon.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<header class:list={['desktop-banner', className]} role="banner">
+  <!-- Dithered retro landscape background: blue sky, cloud gradient, grassy green hills -->
+  <div class="desktop-banner__wallpaper" aria-hidden="true">
+    <svg
+      class="desktop-banner__landscape-svg"
+      viewBox="0 0 1200 360"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <!-- Blue sky gradient -->
+        <linearGradient id="db-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#12529e" />
+          <stop offset="40%" stop-color="#3d8bd7" />
+          <stop offset="75%" stop-color="#8cc2ee" />
+          <stop offset="100%" stop-color="#d6eafd" />
+        </linearGradient>
+
+        <!-- Grassy green far hill gradient -->
+        <linearGradient id="db-hill-far" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4aa434" />
+          <stop offset="55%" stop-color="#337d22" />
+          <stop offset="100%" stop-color="#1d5513" />
+        </linearGradient>
+
+        <!-- Grassy green near hill gradient -->
+        <linearGradient id="db-hill-near" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#60c538" />
+          <stop offset="45%" stop-color="#419826" />
+          <stop offset="100%" stop-color="#195211" />
+        </linearGradient>
+
+        <!-- Soft cloud gradient -->
+        <linearGradient id="db-cloud" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.55" />
+        </linearGradient>
+
+        <!-- 4x4 dither texture pattern overlay -->
+        <pattern id="db-dither" width="4" height="4" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" width="2" height="2" fill="#000000" fill-opacity="0.08" />
+          <rect x="2" y="2" width="2" height="2" fill="#000000" fill-opacity="0.08" />
+          <rect x="2" y="0" width="2" height="2" fill="#ffffff" fill-opacity="0.06" />
+          <rect x="0" y="2" width="2" height="2" fill="#ffffff" fill-opacity="0.06" />
+        </pattern>
+      </defs>
+
+      <!-- Sky layer -->
+      <rect width="1200" height="360" fill="url(#db-sky)" />
+
+      <!-- Retro cloud gradient formations -->
+      <path
+        d="M130,90 Q150,65 180,65 Q210,65 225,85 Q250,80 265,100 Q275,115 265,130 Q250,140 215,140 L145,140 Q120,140 120,120 Q120,100 130,90 Z"
+        fill="url(#db-cloud)"
+      />
+      <path
+        d="M740,65 Q760,40 790,40 Q825,40 845,60 Q875,55 890,80 Q905,100 890,120 Q870,130 825,130 L750,130 Q720,130 720,110 Q720,85 740,65 Z"
+        fill="url(#db-cloud)"
+      />
+      <path
+        d="M980,105 Q995,85 1020,85 Q1045,85 1060,100 Q1080,95 1095,115 Q1105,130 1095,145 Q1080,155 1045,155 L990,155 Q965,155 965,135 Q965,115 980,105 Z"
+        fill="url(#db-cloud)"
+        opacity="0.8"
+      />
+
+      <!-- Grassy green hills -->
+      <path d="M0,230 Q260,170 600,210 T1200,190 L1200,360 L0,360 Z" fill="url(#db-hill-far)" />
+      <path d="M0,280 Q340,180 760,240 T1200,220 L1200,360 L0,360 Z" fill="url(#db-hill-near)" />
+
+      <!-- Dithered retro overlay across the landscape -->
+      <rect width="1200" height="360" fill="url(#db-dither)" />
+    </svg>
+  </div>
+
+  <!-- Content Layer: Top-left desktop icons and centered bold title -->
+  <div class="desktop-banner__content">
+    <!-- Top-left desktop icons row -->
+    <div class="desktop-banner__icons" role="toolbar" aria-label="Desktop icons">
+      <button
+        type="button"
+        class="desktop-banner__icon"
+        data-desktop-icon="computer"
+        aria-label="My Computer"
+      >
+        <div class="desktop-banner__icon-graphic">
+          <PixelIcon name="computer" size={32} color="#ffffff" />
+        </div>
+        <span class="desktop-banner__icon-label">My Computer</span>
+      </button>
+
+      <button
+        type="button"
+        class="desktop-banner__icon"
+        data-desktop-icon="folder"
+        aria-label="Folder"
+      >
+        <div class="desktop-banner__icon-graphic">
+          <PixelIcon name="folder" size={32} color="#ffe57f" />
+        </div>
+        <span class="desktop-banner__icon-label">Folder</span>
+      </button>
+
+      <button
+        type="button"
+        class="desktop-banner__icon"
+        data-desktop-icon="trash"
+        aria-label="Recycle Bin"
+      >
+        <div class="desktop-banner__icon-graphic">
+          <PixelIcon name="trash" size={32} color="#ffffff" />
+        </div>
+        <span class="desktop-banner__icon-label">Recycle Bin</span>
+      </button>
+    </div>
+
+    <!-- Centered bold title & subtitle -->
+    <div class="desktop-banner__title-group">
+      <span class="desktop-banner__tag">PORTFOLIO</span>
+      <h1 class="desktop-banner__title">PAPI’S ARTISTIC GARDEN</h1>
+      <p class="desktop-banner__subtitle">by Mazen Ragab</p>
+    </div>
+  </div>
+
+  <!-- Bottom Win95 system strip -->
+  <div class="desktop-banner__system-strip" role="region" aria-label="Win95 system strip">
+    <div class="desktop-banner__strip-start-group">
+      <button type="button" class="desktop-banner__start-btn" aria-label="Start menu">
+        <PixelIcon name="flower" size={14} color="#06068e" />
+        <span class="desktop-banner__start-label">Start</span>
+      </button>
+
+      <div class="desktop-banner__path" title="Current path">
+        <span class="desktop-banner__path-text">C:\MAZEN\PORTFOLIO.EXE</span>
+      </div>
+    </div>
+
+    <div class="desktop-banner__status-group">
+      <div class="desktop-banner__status-cell">1 object(s) selected</div>
+      <div class="desktop-banner__status-cell">3.14 MB</div>
+      <div class="desktop-banner__status-cell desktop-banner__status-cell--ready">Ready</div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .desktop-banner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: clamp(260px, 35vw, 360px);
+    overflow: hidden;
+    background: linear-gradient(180deg, #12529e 0%, #8cc2ee 50%, #419826 65%, #195211 100%);
+    border: 2px solid #808080;
+    box-shadow:
+      inset 1px 1px 0 #ffffff,
+      inset -1px -1px 0 #000000;
+  }
+
+  .desktop-banner__wallpaper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .desktop-banner__landscape-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .desktop-banner__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0.875rem 1.25rem 0.5rem;
+  }
+
+  /* Desktop icons row: Top-left */
+  .desktop-banner__icons {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    align-self: flex-start;
+    margin-bottom: 0.5rem;
+  }
+
+  .desktop-banner__icon {
+    background: transparent;
+    border: 1px dotted transparent;
+    padding: 0.25rem 0.375rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    color: #ffffff;
+    text-align: center;
+    width: 76px;
+    max-width: 80px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .desktop-banner__icon:hover,
+  .desktop-banner__icon:focus-visible {
+    border-color: #ffffff;
+    background-color: rgba(0, 0, 128, 0.45);
+    outline: none;
+  }
+
+  .desktop-banner__icon-graphic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.7));
+  }
+
+  .desktop-banner__icon-label {
+    font-family: var(--font-display, monospace);
+    font-size: 0.6875rem;
+    line-height: 1.15;
+    color: #ffffff;
+    text-shadow:
+      1px 1px 0 #000000,
+      -1px -1px 0 #000000,
+      1px -1px 0 #000000,
+      -1px 1px 0 #000000;
+    word-break: break-word;
+  }
+
+  /* Centered bold title & subtitle */
+  .desktop-banner__title-group {
+    align-self: center;
+    text-align: center;
+    margin: auto 0;
+    padding-inline: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .desktop-banner__tag {
+    font-family: var(--font-display, monospace);
+    font-size: clamp(0.7rem, 1.2vw, 0.875rem);
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    color: #ffe838;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 0.15rem 0.65rem;
+    margin-bottom: 0.35rem;
+    text-shadow: 1px 1px 0 #000000;
+  }
+
+  .desktop-banner__title {
+    font-family: var(--font-display, monospace);
+    font-size: clamp(1.5rem, 4.2vw, 3rem);
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+    margin: 0;
+    text-shadow:
+      2px 2px 0 #06068e,
+      4px 4px 0 #000000;
+  }
+
+  .desktop-banner__subtitle {
+    font-family: var(--font-body, sans-serif);
+    font-style: italic;
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+    color: #ffffff;
+    margin: 0.35rem 0 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  }
+
+  /* Bottom Win95 system strip */
+  .desktop-banner__system-strip {
+    position: relative;
+    z-index: 2;
+    background-color: var(--color-window, #c0c0c0);
+    border-top: 2px solid #ffffff;
+    border-bottom: 2px solid #000000;
+    padding: 3px 6px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.75rem;
+    color: #000000;
+  }
+
+  .desktop-banner__strip-start-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .desktop-banner__start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    background: #c0c0c0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow:
+      inset 1px 1px 0 #dfdfdf,
+      inset -1px -1px 0 #808080;
+    font-family: var(--font-display, monospace);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #000000;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .desktop-banner__start-btn:active {
+    border-top: 2px solid #000000;
+    border-left: 2px solid #000000;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    box-shadow:
+      inset 1px 1px 0 #808080,
+      inset -1px -1px 0 #dfdfdf;
+    padding: 3px 7px 1px 9px;
+  }
+
+  .desktop-banner__path {
+    background: #ffffff;
+    color: #000000;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    padding: 2px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: min(320px, 100%);
+  }
+
+  .desktop-banner__path-text {
+    letter-spacing: 0.05em;
+  }
+
+  .desktop-banner__status-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .desktop-banner__status-cell {
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    color: #222222;
+    white-space: nowrap;
+  }
+
+  .desktop-banner__status-cell--ready {
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .desktop-banner__icons {
+      gap: 0.5rem;
+    }
+
+    .desktop-banner__icon {
+      width: 64px;
+      padding: 0.2rem 0.25rem;
+    }
+
+    .desktop-banner__path {
+      max-width: 180px;
+    }
+
+    .desktop-banner__status-group {
+      font-size: 0.65rem;
+    }
+  }
+
+  @media (max-width: 440px) {
+    .desktop-banner__status-cell:nth-child(2) {
+      display: none;
+    }
+  }
+</style>

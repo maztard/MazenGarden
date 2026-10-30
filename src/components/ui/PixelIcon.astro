@@ -1,0 +1,39 @@
+---
+import { icons } from '../../data/icons';
+
+interface Props {
+  name: string;
+  size?: number;
+  color?: string;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const { name, size = 16, color = 'currentColor', class: className, ariaLabel } = Astro.props;
+
+const pixels = icons[name] ?? [];
+---
+
+<svg
+  class:list={['pixel-icon', className]}
+  width={size}
+  height={size}
+  viewBox="0 0 16 16"
+  shape-rendering="crispEdges"
+  aria-hidden={ariaLabel ? undefined : 'true'}
+  aria-label={ariaLabel}
+  role={ariaLabel ? 'img' : undefined}
+>
+  {pixels.map(([x, y]) => (
+    <rect x={x} y={y} width="1" height="1" fill={color} />
+  ))}
+</svg>
+
+<style>
+  .pixel-icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    image-rendering: pixelated;
+  }
+</style>
