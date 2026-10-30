@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Final Review Fix Pass', () => {
-  test('drag start does not immediately cause layout jump of overlapping windows', async ({ page }) => {
+  test('drag start does not immediately cause layout jump of overlapping windows', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('./');
 
@@ -29,7 +31,9 @@ test.describe('Final Review Fix Pass', () => {
     await page.mouse.up();
   });
 
-  test('post links allow modifier keys (Ctrl/Cmd click) without preventDefault', async ({ page }) => {
+  test('post links allow modifier keys (Ctrl/Cmd click) without preventDefault', async ({
+    page,
+  }) => {
     await page.goto('./');
     // Open writing window
     await page.locator('[data-dock-toggle="writing"]').click();
@@ -47,6 +51,8 @@ test.describe('Final Review Fix Pass', () => {
 
     // Should render retro desktop layout
     await expect(page.locator('.dock, [role="region"][aria-label="Taskbar"]')).toBeVisible();
-    await expect(page.locator('a[href*="/blog/"]:not([href*="/blog/hello-world/"])')).toHaveCount(0);
+    await expect(page.locator('a[href*="/blog/"]:not([href*="/blog/hello-world/"])')).toHaveCount(
+      0,
+    );
   });
 });

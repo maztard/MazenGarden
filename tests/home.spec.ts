@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Homepage Retro Desktop', () => {
-  test('desktop landscape banner renders with wallpaper, desktop icons, bold title, and system strip', async ({
+  test('desktop landscape banner renders as full-height hero without system strip', async ({
     page,
   }) => {
     await page.goto('./');
@@ -25,27 +25,33 @@ test.describe('Homepage Retro Desktop', () => {
 
     await expect(computerIcon).toBeVisible();
     await expect(computerIcon).toContainText('My Computer');
+    await expect(computerIcon).toHaveAttribute('data-hero-action', 'computer');
 
     await expect(folderIcon).toBeVisible();
     await expect(folderIcon).toContainText('Folder');
+    await expect(folderIcon).toHaveAttribute('data-hero-action', 'folder');
 
     await expect(trashIcon).toBeVisible();
     await expect(trashIcon).toContainText('Recycle Bin');
+    await expect(trashIcon).toHaveAttribute('data-hero-action', 'trash');
 
     // Title group
     await expect(banner.locator('.desktop-banner__tag')).toHaveText('PORTFOLIO');
     await expect(banner.locator('.desktop-banner__title')).toHaveText('PAPI’S ARTISTIC GARDEN');
     await expect(banner.locator('.desktop-banner__subtitle')).toHaveText('by Mazen Ragab');
 
-    // Win95 system strip
-    const strip = banner.locator('.desktop-banner__system-strip');
-    await expect(strip).toBeVisible();
-    await expect(strip.locator('.desktop-banner__start-btn')).toBeVisible();
-    await expect(strip.locator('.desktop-banner__start-label')).toHaveText('Start');
-    await expect(strip.locator('.desktop-banner__path-text')).toHaveText(
-      'C:\\MAZEN\\PORTFOLIO.EXE',
-    );
-    await expect(strip.locator('.desktop-banner__status-cell--ready')).toHaveText('Ready');
+    // Scroll explore hint button
+    await expect(banner.locator('[data-scroll-explore]')).toBeVisible();
+
+    // Full-height hero: banner height is at least viewport height
+    const bannerBox = await banner.boundingBox();
+    const viewportSize = page.viewportSize();
+    if (bannerBox && viewportSize) {
+      expect(bannerBox.height).toBeGreaterThanOrEqual(viewportSize.height - 1);
+    }
+
+    // Win95 system strip is NOT present in hero banner (unified into single bottom dock)
+    await expect(banner.locator('.desktop-banner__system-strip')).toHaveCount(0);
   });
 
   test('static About Me section is on the page canvas (never in an iframe or window)', async ({
@@ -95,16 +101,22 @@ test.describe('Homepage Retro Desktop', () => {
     );
     await expect(bioParagraphs.nth(4)).toContainText('extremely curious');
 
-    // SKILLS section with badges
+    // SKILLS section with square tiles
     const skillsSection = canvas.locator(
       '.about-canvas__section[aria-labelledby="about-skills-title"]',
     );
     await expect(skillsSection).toBeVisible();
     await expect(skillsSection.locator('#about-skills-title')).toHaveText('SKILLS');
 
-    const badges = skillsSection.locator('.about-canvas__badge');
-    await expect(badges).toHaveCount(5);
-    await expect(badges).toHaveText(['Tech', 'AI', 'Marketing', 'Psychology', 'Web']);
+    const tiles = skillsSection.locator('.skills-grid .skill-tile');
+    await expect(tiles).toHaveCount(5);
+    await expect(tiles.locator('.skill-tile__title')).toHaveText([
+      'Tech',
+      'AI',
+      'Marketing',
+      'Psychology',
+      'Web',
+    ]);
 
     // EDUCATION section
     const eduSection = canvas.locator(
@@ -180,10 +192,23 @@ test.describe('Homepage Retro Desktop', () => {
     const socialsWin = page.locator('#window-socials');
     await expect(socialsWin).toBeVisible();
 
-    const igLink = socialsWin.locator('a[href*="instagram.com"]');
-    await expect(igLink).toBeVisible();
-    await expect(igLink).toHaveAttribute('href', 'https://www.instagram.com/papisartisticgarden/');
-    await expect(igLink).toContainText('@papisartisticgarden');
+    const igLinks = socialsWin.locator('a[href*="instagram.com"]');
+    await expect(igLinks).toHaveCount(3);
+    await expect(igLinks.nth(0)).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/papisartisticgarden/',
+    );
+    await expect(igLinks.nth(0)).toContainText('@papisartisticgarden');
+    await expect(igLinks.nth(1)).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/bigdaddymazen/',
+    );
+    await expect(igLinks.nth(1)).toContainText('@bigdaddymazen');
+    await expect(igLinks.nth(2)).toHaveAttribute(
+      'href',
+      'https://www.instagram.com/thewonderfulworldofmazen/',
+    );
+    await expect(igLinks.nth(2)).toContainText('@thewonderfulworldofmazen');
 
     const ghLink = socialsWin.locator('a[href*="github.com"]');
     await expect(ghLink).toBeVisible();

@@ -149,15 +149,18 @@ test('Desktop floating positioning at > 900px places photos upper right, socials
 
   const photosWin = page.locator('#window-photos');
   const socialsWin = page.locator('#window-socials');
+  const stage = page.locator('.desktop-stage');
 
   const photosBox = await photosWin.boundingBox();
   const socialsBox = await socialsWin.boundingBox();
+  const stageBox = await stage.boundingBox();
   expect(photosBox).not.toBeNull();
   expect(socialsBox).not.toBeNull();
+  expect(stageBox).not.toBeNull();
 
   // Photos should be in upper right quadrant of stage
   expect(photosBox!.x).toBeGreaterThan(600);
-  expect(photosBox!.y).toBeLessThan(400);
+  expect(photosBox!.y - stageBox!.y).toBeLessThan(400);
 
   // Socials should overlap bottom-right of photos
   expect(socialsBox!.x).toBeGreaterThanOrEqual(photosBox!.x);

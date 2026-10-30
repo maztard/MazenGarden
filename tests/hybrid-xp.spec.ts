@@ -138,4 +138,3 @@ test.describe('Hybrid Windows XP + 95 Desktop', () => {
     await exploreBtn.click();
   });
 });
-

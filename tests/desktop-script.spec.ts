@@ -124,6 +124,7 @@ test.describe('Desktop Client Script (desktop.ts)', () => {
   test('Window dragging works on desktop with boundary clamping', async ({ page }) => {
     const photosWin = page.locator('#window-photos');
     const handle = photosWin.locator('[data-window-handle]');
+    await handle.scrollIntoViewIfNeeded();
 
     const initialBox = await handle.boundingBox();
     expect(initialBox).not.toBeNull();
@@ -131,7 +132,7 @@ test.describe('Desktop Client Script (desktop.ts)', () => {
     // Drag handle by (+60, +40)
     await page.mouse.move(initialBox!.x + 20, initialBox!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(initialBox!.x + 80, initialBox!.y + 50);
+    await page.mouse.move(initialBox!.x + 80, initialBox!.y + 50, { steps: 5 });
     await page.mouse.up();
 
     const movedRect = await photosWin.evaluate((el) => el.getBoundingClientRect());
@@ -141,7 +142,7 @@ test.describe('Desktop Client Script (desktop.ts)', () => {
     const handleBox2 = await handle.boundingBox();
     await page.mouse.move(handleBox2!.x + 20, handleBox2!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(2500, handleBox2!.y + 10);
+    await page.mouse.move(2500, handleBox2!.y + 10, { steps: 5 });
     await page.mouse.up();
 
     const rightClamped = await photosWin.evaluate((el) => {
@@ -157,7 +158,7 @@ test.describe('Desktop Client Script (desktop.ts)', () => {
     const handleBox3 = await handle.boundingBox();
     await page.mouse.move(handleBox3!.x + 20, handleBox3!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(-2000, handleBox3!.y + 10);
+    await page.mouse.move(-2000, handleBox3!.y + 10, { steps: 5 });
     await page.mouse.up();
 
     const leftClamped = await photosWin.evaluate((el) => {
@@ -169,33 +170,38 @@ test.describe('Desktop Client Script (desktop.ts)', () => {
     // At least 80px remains on screen on left edge
     expect(leftClamped.right).toBeGreaterThanOrEqual(79);
 
-    // Drag towards bottom: must stay above dock
+    // Drag towards bottom: must stay inside stage bounds
     const handleBox4 = await handle.boundingBox();
     await page.mouse.move(handleBox4!.x + 20, handleBox4!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(handleBox4!.x + 20, 1500);
+    await page.mouse.move(handleBox4!.x + 20, 2000, { steps: 5 });
     await page.mouse.up();
 
     const bottomClamped = await photosWin.evaluate((el) => {
       const rect = el.getBoundingClientRect();
-      const dock = document.querySelector('.dock');
-      const dockHeight = dock ? dock.getBoundingClientRect().height : 36;
+      const stage = document.querySelector('.desktop-stage') || document.body;
+      const stageRect = stage.getBoundingClientRect();
       return {
         bottom: rect.bottom,
-        maxBottom: window.innerHeight - dockHeight,
+        stageBottom: stageRect.bottom,
       };
     });
-    expect(bottomClamped.bottom).toBeLessThanOrEqual(bottomClamped.maxBottom + 2);
+    expect(bottomClamped.bottom).toBeLessThanOrEqual(bottomClamped.stageBottom + 2);
 
-    // Drag towards top: must not go off top (minTop >= 0)
+    // Drag towards top: must not go above stage top
     const handleBox5 = await handle.boundingBox();
     await page.mouse.move(handleBox5!.x + 20, handleBox5!.y + 10);
     await page.mouse.down();
-    await page.mouse.move(handleBox5!.x + 20, -500);
+    await page.mouse.move(handleBox5!.x + 20, -1000, { steps: 5 });
     await page.mouse.up();
 
-    const topClamped = await photosWin.evaluate((el) => el.getBoundingClientRect().top);
-    expect(topClamped).toBeGreaterThanOrEqual(0);
+    const topClamped = await photosWin.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const stage = document.querySelector('.desktop-stage') || document.body;
+      const stageRect = stage.getBoundingClientRect();
+      return rect.top - stageRect.top;
+    });
+    expect(topClamped).toBeGreaterThanOrEqual(-1);
   });
 
   test('Dragging is disabled on screens <= 900px', async ({ page }) => {

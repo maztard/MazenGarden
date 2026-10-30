@@ -36,14 +36,15 @@ test('AboutCanvas component exists and conforms to structural specifications', (
     'Overall, I would say I am just extremely curious. I like going down random rabbit holes, learning things that have absolutely nothing to do with school, and then somehow finding a way to connect them back to something useful. My goal is basically to become the type of person who can walk into almost any conversation and have something interesting to contribute.',
   );
 
-  // SKILLS section with circular retro badges for Tech, AI, Marketing, Psychology, Web
+  // SKILLS section with square 3D tiles for Tech, AI, Marketing, Psychology, Web
   expect(content).toContain('SKILLS');
   expect(content).toContain('Tech');
   expect(content).toContain('AI');
   expect(content).toContain('Marketing');
   expect(content).toContain('Psychology');
   expect(content).toContain('Web');
-  expect(content).toContain('about-canvas__badge');
+  expect(content).toContain('skills-grid');
+  expect(content).toContain('skill-tile');
 
   // EDUCATION section: New Cairo STEM School (G12)
   expect(content).toContain('EDUCATION');
@@ -76,9 +77,10 @@ test('SocialsWindow component exists and provides pixel icon social links', () =
   // Imports PixelIcon
   expect(content).toContain("import PixelIcon from '../ui/PixelIcon.astro'");
 
-  // Instagram: @papisartisticgarden
-  expect(content).toContain('https://www.instagram.com/papisartisticgarden/');
+  // Instagram: 3 branding accounts (@papisartisticgarden, @bigdaddymazen, @thewonderfulworldofmazen)
   expect(content).toContain('@papisartisticgarden');
+  expect(content).toContain('@bigdaddymazen');
+  expect(content).toContain('@thewonderfulworldofmazen');
 
   // GitHub: maztard
   expect(content).toContain('https://github.com/maztard');

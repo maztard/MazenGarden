@@ -51,12 +51,11 @@ test('DesktopBanner component exists and satisfies retro landscape banner requir
   expect(content).toContain('PAPI’S ARTISTIC GARDEN');
   expect(content).toContain('by Mazen Ragab');
 
-  // Bottom Win95 system strip
-  expect(content).toContain('class="desktop-banner__system-strip"');
-  expect(content).toContain('class="desktop-banner__start-btn"');
-  expect(content).toContain('Start');
-  expect(content).toContain('C:\\MAZEN\\PORTFOLIO.EXE');
-  expect(content).toContain('1 object(s) selected');
-  expect(content).toContain('3.14 MB');
-  expect(content).toContain('Ready');
+  // Full-viewport hero banner styling and interactive scroll/action elements
+  expect(content).toContain('min-height: 100vh');
+  expect(content).toContain('data-hero-action="computer"');
+  expect(content).toContain('data-hero-action="folder"');
+  expect(content).toContain('data-hero-action="trash"');
+  expect(content).toContain('data-scroll-explore');
+  expect(content).not.toContain('desktop-banner__system-strip');
 });

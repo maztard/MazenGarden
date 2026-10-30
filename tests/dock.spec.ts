@@ -50,11 +50,12 @@ test('DesktopDock component exists and satisfies Win95 taskbar dock requirements
   expect(content).toMatch(/role=["'](?:region|toolbar)["']/);
   expect(content).toContain('aria-label="Taskbar"');
 
-  // Classic Win95 Start button on the left with flower icon and label
+  // Classic Win95 layout with Windows XP emerald Start button on the left with flower icon and label
   expect(content).toContain('dock__start');
   expect(content).toContain('type="button"');
   expect(content).toContain('<PixelIcon name="flower" size={16} />');
   expect(content).toContain('Start');
+  expect(content).toContain('linear-gradient(180deg, #3fa13f');
 
   // App buttons row rendering DockButton for each app in apps
   expect(content).toContain('apps.map');
