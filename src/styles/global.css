@@ -657,7 +657,8 @@ a:hover {
     0 4px 10px var(--tile-glow, rgba(0, 0, 0, 0.25));
 }
 
-.skill-tile:active {
+.skill-tile:active,
+.skill-tile.skill-tile--active {
   transform: translate(1px, 1px);
   border-top: 2px solid #404040;
   border-left: 2px solid #404040;
@@ -665,7 +666,8 @@ a:hover {
   border-bottom: 2px solid #ffffff;
   box-shadow:
     inset 1px 1px 0 #808080,
-    inset -1px -1px 0 #dfdfdf;
+    inset -1px -1px 0 #dfdfdf,
+    0 0 8px var(--tile-glow, rgba(0, 0, 0, 0.3));
   background: #e2ded0;
 }
 

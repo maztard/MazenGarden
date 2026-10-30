@@ -70,13 +70,19 @@ const skills: SkillItem[] = [
     </h2>
     <div class="skills-grid" role="list" aria-label="Skills">
       {skills.map((skill) => (
-        <div class={`skill-tile skill-tile--${skill.id}`} role="listitem" tabindex="0">
+        <button
+          type="button"
+          class={`skill-tile skill-tile--${skill.id}`}
+          role="listitem"
+          aria-pressed="false"
+          aria-label={`${skill.title}: ${skill.desc}`}
+        >
           <div class="skill-tile__header">
             <span class="skill-tile__badge">{skill.badge}</span>
             <span class="skill-tile__title">{skill.title}</span>
           </div>
           <span class="skill-tile__desc">{skill.desc}</span>
-        </div>
+        </button>
       ))}
     </div>
   </div>

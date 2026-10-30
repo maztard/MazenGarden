@@ -183,9 +183,13 @@ export function setupWindowDragging(win: HTMLElement, handle: HTMLElement): void
     const minLeft = offsetX + Math.min(0, 80 - winWidth);
     const maxLeft = offsetX + Math.max(Math.min(0, 80 - winWidth), stage.clientWidth - 80);
 
-    // vertically: stays inside stage bounds
+    // vertically: stays inside stage bounds leaving clearance for the fixed dock
+    const dockEl = document.querySelector<HTMLElement>(
+      '.dock, [role="region"][aria-label="Taskbar"]',
+    );
+    const dockHeight = dockEl ? dockEl.getBoundingClientRect().height : 36;
     const minTop = offsetY;
-    const maxTop = offsetY + Math.max(0, stage.clientHeight - winHeight);
+    const maxTop = offsetY + Math.max(0, stage.clientHeight - winHeight - dockHeight);
 
     const clampedLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
     const clampedTop = Math.max(minTop, Math.min(newTop, maxTop));
@@ -472,6 +476,16 @@ export function initWindowManager(force = false): void {
 
   // Desktop hero icon actions
   initDesktopHeroActions();
+
+  // Interactive square skill tiles
+  const skillTiles = document.querySelectorAll<HTMLButtonElement>('.skill-tile');
+  skillTiles.forEach((tile) => {
+    tile.addEventListener('click', () => {
+      const isCurrentlyActive = tile.classList.contains('skill-tile--active');
+      tile.classList.toggle('skill-tile--active', !isCurrentlyActive);
+      tile.setAttribute('aria-pressed', String(!isCurrentlyActive));
+    });
+  });
 
   // 24h clock update every 15s (singleton guard)
   if (!(window as unknown as { __dockClockInit?: boolean }).__dockClockInit) {
