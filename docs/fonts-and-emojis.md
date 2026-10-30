@@ -8,11 +8,11 @@ This document outlines the retro typography, pixel emoji pipeline, and custom ic
 
 The site uses a strict self-hosted retro typography stack with zero runtime external requests (no live Google Fonts network calls).
 
-| Font | Type | Source Path | CSS Variable | Purpose & Usage |
-|---|---|---|---|---|
-| **Dotemp (8-bit)** | Local TrueType (`.ttf`) | `src/assets/fonts/Dotemp-8bit.ttf` | `--font-dotemp` | Display headings, window titlebars, retro labels, the offset red **"Me!"** line, and dock tooltips. |
-| **Geist Pixel** | Web font (downloaded at build) | Astro Fonts API (`fontProviders.google()`) | `--font-geist-pixel` | Primary body copy, bio paragraphs, article prose, and descriptions. |
-| **SerenityOS Emoji** | Local TrueType (`.ttf`) | `src/assets/fonts/SerenityOS-Emoji.ttf` | In fallback stack of `--font-body` and `--font-display` | Automatic pixel emoji fallback for standard Unicode emojis in copy. |
+| Font                 | Type                           | Source Path                                | CSS Variable                                            | Purpose & Usage                                                                                     |
+| -------------------- | ------------------------------ | ------------------------------------------ | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Dotemp (8-bit)**   | Local TrueType (`.ttf`)        | `src/assets/fonts/Dotemp-8bit.ttf`         | `--font-dotemp`                                         | Display headings, window titlebars, retro labels, the offset red **"Me!"** line, and dock tooltips. |
+| **Geist Pixel**      | Web font (downloaded at build) | Astro Fonts API (`fontProviders.google()`) | `--font-geist-pixel`                                    | Primary body copy, bio paragraphs, article prose, and descriptions.                                 |
+| **SerenityOS Emoji** | Local TrueType (`.ttf`)        | `src/assets/fonts/SerenityOS-Emoji.ttf`    | In fallback stack of `--font-body` and `--font-display` | Automatic pixel emoji fallback for standard Unicode emojis in copy.                                 |
 
 ### Font Stacks in `src/styles/global.css`
 
@@ -24,7 +24,9 @@ The site uses a strict self-hosted retro typography stack with zero runtime exte
 ```
 
 ### Self-Hosting & Zero-Runtime Google Requests
+
 In `astro.config.mjs`:
+
 ```js
 fonts: [
   {
@@ -44,8 +46,9 @@ fonts: [
     subsets: ['latin'],
     fallbacks: ['sans-serif'],
   },
-]
+];
 ```
+
 Astro's Fonts API downloads Geist Pixel during the build step and packages the font files directly into the static output bundle. At runtime, no requests are made to Google's servers.
 
 ---
@@ -55,6 +58,7 @@ Astro's Fonts API downloads Geist Pixel during the build step and packages the f
 Modern platform emojis (Apple, Google, Windows) are glossy and high-resolution, which breaks the retro 90s aesthetic. To maintain authentic pixel art across all devices, the site uses a hybrid emoji pipeline:
 
 ### A. Primary: Curated PixelTwemoji SVGs (18×18)
+
 - **Source:** [AmberWat/PixelTwemojiMC-18](https://github.com/AmberWat/PixelTwemojiMC-18) v8.0.
 - **License:** CC BY 4.0.
 - **Location:** `src/assets/emoji/` (e.g., `1f911.svg` for `🤑`).
@@ -72,10 +76,14 @@ Modern platform emojis (Apple, Google, Windows) are glossy and high-resolution, 
   ---
   import PixelEmoji from '../components/ui/PixelEmoji.astro';
   ---
-  <p>Nothing crazy, just taking a pic <PixelEmoji emoji="🤑" alt="money-mouth face" /></p>
+
+  <p>
+    Nothing crazy, just taking a pic <PixelEmoji emoji="🤑" alt="money-mouth face" />
+  </p>
   ```
 
 ### B. Fallback: SerenityOS Emoji Font
+
 - **Source:** [SerenityOS](https://github.com/SerenityOS/serenity) / [linusg/serenityos-emoji-font](https://github.com/linusg/serenityos-emoji-font).
 - **License:** BSD-2-Clause.
 - **Font File:** `src/assets/fonts/SerenityOS-Emoji.ttf` (670 KB).
@@ -103,26 +111,28 @@ Standard emoji characters are strictly forbidden in UI chrome (window titlebars,
 
 ### Available Icons
 
-| Icon Name | Symbol | Where Used |
-|---|---|---|
-| `home` | Peaked house silhouette | Home dock button |
-| `photos` | Camera with lens circle | Photos window titlebar & dock button |
-| `projects` | Shopping cart / code folder | Projects window titlebar & dock button |
-| `writing` | Diagonal pencil | Writing window titlebar & dock button |
-| `contact` | Mail envelope | Socials/Contact window titlebar & dock button |
-| `rss` | Broadcast signal waves | RSS window titlebar & dock button |
-| `close` | 2px retro X cross | Window titlebar close `[X]` button |
-| `pin` | Pushpin | Pinned window indicator |
-| `flower` | 5-petal pixel flower | Site visual mark & `public/favicon.svg` |
-| `computer` | Classic desktop PC | Desktop landscape banner icon |
-| `folder` | Classic Windows folder | Desktop landscape banner icon |
-| `trash` | Recycle bin | Desktop landscape banner icon |
+| Icon Name  | Symbol                      | Where Used                                    |
+| ---------- | --------------------------- | --------------------------------------------- |
+| `home`     | Peaked house silhouette     | Home dock button                              |
+| `photos`   | Camera with lens circle     | Photos window titlebar & dock button          |
+| `projects` | Shopping cart / code folder | Projects window titlebar & dock button        |
+| `writing`  | Diagonal pencil             | Writing window titlebar & dock button         |
+| `contact`  | Mail envelope               | Socials/Contact window titlebar & dock button |
+| `rss`      | Broadcast signal waves      | RSS window titlebar & dock button             |
+| `close`    | 2px retro X cross           | Window titlebar close `[X]` button            |
+| `pin`      | Pushpin                     | Pinned window indicator                       |
+| `flower`   | 5-petal pixel flower        | Site visual mark & `public/favicon.svg`       |
+| `computer` | Classic desktop PC          | Desktop landscape banner icon                 |
+| `folder`   | Classic Windows folder      | Desktop landscape banner icon                 |
+| `trash`    | Recycle bin                 | Desktop landscape banner icon                 |
 
 ### Example Usage
+
 ```astro
 ---
 import PixelIcon from '../ui/PixelIcon.astro';
 ---
+
 <!-- Render a 16x16 icon -->
 <PixelIcon name="writing" size={16} />
 

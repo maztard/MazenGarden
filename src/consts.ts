@@ -7,4 +7,3 @@ export const INSTAGRAM_PAPIS_URL = 'https://www.instagram.com/papisartisticgarde
 export const INSTAGRAM_MAIN_URL = 'https://www.instagram.com/bigdaddymazen/';
 export const INSTAGRAM_WORLD_URL = 'https://www.instagram.com/thewonderfulworldofmazen/';
 export const INSTAGRAM_URL = INSTAGRAM_PAPIS_URL;
-

@@ -1,10 +1,6 @@
 ---
 import PixelIcon from '../ui/PixelIcon.astro';
-import {
-  INSTAGRAM_PAPIS_URL,
-  INSTAGRAM_MAIN_URL,
-  INSTAGRAM_WORLD_URL,
-} from '../../consts';
+import { INSTAGRAM_PAPIS_URL, INSTAGRAM_MAIN_URL, INSTAGRAM_WORLD_URL } from '../../consts';
 
 interface Props {
   class?: string;
@@ -73,11 +69,7 @@ const socials: SocialLinkItem[] = [
       <li class="socials-item">
         <a
           href={item.url}
-          class:list={[
-            'socials-link',
-            'social-link',
-            item.featured && 'social-link--featured',
-          ]}
+          class:list={['socials-link', 'social-link', item.featured && 'social-link--featured']}
           target={item.external ? '_blank' : undefined}
           rel={item.external ? 'noopener noreferrer' : undefined}
         >
