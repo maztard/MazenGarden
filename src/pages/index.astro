@@ -1,127 +1,42 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PhotoCard from '../components/PhotoCard.astro';
-import PostCard from '../components/PostCard.astro';
-import ProjectsWindow from '../components/ProjectsWindow.astro';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import DesktopBanner from '../components/desktop/DesktopBanner.astro';
+import DesktopWindow from '../components/desktop/DesktopWindow.astro';
+import AboutCanvas from '../components/apps/AboutCanvas.astro';
+import MeetMazenWindow from '../components/apps/MeetMazenWindow.astro';
+import SocialsWindow from '../components/apps/SocialsWindow.astro';
+import ProjectsContent from '../components/apps/ProjectsContent.astro';
+import WritingContent from '../components/apps/WritingContent.astro';
+import RssContent from '../components/apps/RssContent.astro';
 import { HOME_TITLE, SITE_DESCRIPTION } from '../consts';
-import { getPublishedPosts } from '../utils/posts';
-import { withBase } from '../utils/url';
-import sky1 from '../assets/images/sky1.jpeg';
-import sky2 from '../assets/images/sky2.jpeg';
-import dorm1 from '../assets/images/dorm1.jpeg';
-import random1 from '../assets/images/random1.jpeg';
-
-const posts = (await getPublishedPosts()).slice(0, 3);
 ---
 
-<BaseLayout title={HOME_TITLE} description={SITE_DESCRIPTION}>
-  <div class="container">
-    <section class="hero">
-      <h1 class="hero__title">
-        About <span class="hero__title-accent">Me!</span>
-      </h1>
-      <p class="hero__name">
-        Mazen Ragab aka <span class="accent">(Maztardoo)</span>
-      </p>
-      <div class="hero__bio">
-        <p>
-          Hi, you already know my name! I am currently a G12 student at New Cairo STEM School. Even
-          though I am G12, I am 16 years old, which is kinda dope ngl cuz I feel superior lol.
-        </p>
-        <p>
-          A fun fact about me is that I am trying to be a Polymath. I am into multiple stuff. I am
-          into Tech, Marketing, Psychology and Human Behaviour, Business, and honestly a lot of
-          other random things that I find interesting. I really enjoy learning about things outside
-          of what I am supposed to know, especially when I can connect different fields together and
-          use them to create something.
-        </p>
-        <p>
-          I don't really want to limit myself to one specific field or career. I want to explore as
-          much as I can, build things, understand people, learn how businesses work, and develop
-          skills that complement each other. I think the most interesting ideas usually happen when
-          you combine knowledge from completely different areas.
-        </p>
-        <p>
-          Outside of academics, I am also really into building projects and experimenting with
-          ideas. I enjoy taking an idea that sounds stupid at first and trying to turn it into
-          something real. I am especially interested in AI, entrepreneurship, and using technology
-          to solve actual problems.
-        </p>
-        <p>
-          Overall, I would say I am just extremely curious. I like going down random rabbit holes,
-          learning things that have absolutely nothing to do with school, and then somehow finding a
-          way to connect them back to something useful. My goal is basically to become the type of
-          person who can walk into almost any conversation and have something interesting to
-          contribute.
-        </p>
-      </div>
-    </section>
+<DesktopLayout title={HOME_TITLE} description={SITE_DESCRIPTION}>
+  <DesktopBanner />
+  <main id="main" class="desktop-stage">
+    <div class="desktop-canvas-layer">
+      <AboutCanvas />
+    </div>
+    <div class="desktop-windows-layer">
+      <DesktopWindow windowId="photos" windowTitle="MEET-MAZEN" icon="photos" isOpen={true}>
+        <MeetMazenWindow />
+      </DesktopWindow>
 
-    {posts.length > 0 && (
-      <section class="section" aria-labelledby="writing-title">
-        <div class="section__heading">
-          <h2 class="section__title" id="writing-title">
-            Latest writing
-          </h2>
-          <a class="section__more" href={withBase('/blog/')}>
-            All posts →
-          </a>
-        </div>
-        <ul class="post-list">
-          {posts.map((post) => (
-            <li>
-              <PostCard post={post} headingLevel="h3" />
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
+      <DesktopWindow windowId="socials" windowTitle="SOCIALS" icon="contact" isOpen={true}>
+        <SocialsWindow />
+      </DesktopWindow>
 
-    <section class="section" id="pics" aria-labelledby="pics-title">
-      <h2 class="section__title" id="pics-title">
-        Random Pics in my <em>life</em>
-      </h2>
-      <ul class="card-grid">
-        <li>
-          <PhotoCard
-            image={sky1}
-            alt="Night sky with a bright moon behind dark leaves"
-            title="A random sky Image I took"
-          >
-            Fun Fact! This is one of the first images I took with my new phone.
-          </PhotoCard>
-        </li>
-        <li>
-          <PhotoCard
-            image={sky2}
-            alt="Dark green leaves against a night sky"
-            title="A random sky Image I took"
-          >
-            I post these pics on{' '}
-            <a href="https://www.instagram.com/papisartisticgarden/">@papisartisticgarden</a>.
-          </PhotoCard>
-        </li>
-        <li>
-          <PhotoCard
-            image={dorm1}
-            alt="Lit dormitory hallway with tiled walls and doors"
-            title="Walking down the dorms"
-          >
-            Nothing <em>crazy</em> I was just walking and took a pic 🤑
-          </PhotoCard>
-        </li>
-        <li>
-          <PhotoCard
-            image={random1}
-            alt="Streetlight glowing over palm leaves at night"
-            title="OMG"
-          >
-            Was with a couple of my friends and just wanted to take a pic BOOM.
-          </PhotoCard>
-        </li>
-      </ul>
-    </section>
-  </div>
+      <DesktopWindow windowId="projects" windowTitle="PROJECTS" icon="projects" isOpen={false}>
+        <ProjectsContent />
+      </DesktopWindow>
 
-  <ProjectsWindow />
-</BaseLayout>
+      <DesktopWindow windowId="writing" windowTitle="WRITING" icon="writing" isOpen={false}>
+        <WritingContent />
+      </DesktopWindow>
+
+      <DesktopWindow windowId="rss" windowTitle="RSS" icon="rss" isOpen={false}>
+        <RssContent />
+      </DesktopWindow>
+    </div>
+  </main>
+</DesktopLayout>

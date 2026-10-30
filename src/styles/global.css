@@ -477,3 +477,133 @@ a:hover {
 .prose :where(p, li, h2, h3, h4, a) {
   overflow-wrap: anywhere;
 }
+
+/* ==========================================================================
+   Single-Page Retro Desktop Stage & Win95 Windows
+   ========================================================================== */
+
+.desktop-body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding-bottom: 46px; /* Space for fixed bottom dock */
+}
+
+.desktop-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: clamp(1rem, 2.5vw, 2.5rem);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.desktop-canvas-layer {
+  min-width: 0;
+}
+
+.desktop-windows-layer {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.desktop-window {
+  position: relative;
+  background: var(--color-window, #c0c0c0);
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow:
+    inset 1px 1px 0 #dfdfdf,
+    inset -1px -1px 0 #808080,
+    4px 6px 12px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.desktop-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(90deg, #06068e 0%, #1084d0 100%);
+  padding: 3px 4px 3px 6px;
+  color: #ffffff;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+}
+
+.desktop-window__bar:active {
+  cursor: grabbing;
+}
+
+.desktop-window__title {
+  flex: 1;
+  font-family: var(--font-display, monospace);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-window__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 16px;
+  padding: 0;
+  background: #c0c0c0;
+  color: #000000;
+  border-top: 1.5px solid #ffffff;
+  border-left: 1.5px solid #ffffff;
+  border-right: 1.5px solid #000000;
+  border-bottom: 1.5px solid #000000;
+  box-shadow:
+    inset 1px 1px 0 #dfdfdf,
+    inset -1px -1px 0 #808080;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.desktop-window__close:active {
+  border-top: 1.5px solid #000000;
+  border-left: 1.5px solid #000000;
+  border-right: 1.5px solid #ffffff;
+  border-bottom: 1.5px solid #ffffff;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #dfdfdf;
+  padding-top: 1px;
+  padding-left: 1px;
+}
+
+.desktop-window__body {
+  padding: 4px;
+  background: var(--color-window, #c0c0c0);
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  .desktop-stage {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1rem;
+  }
+}

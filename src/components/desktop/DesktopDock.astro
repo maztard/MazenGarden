@@ -5,10 +5,11 @@ import PixelIcon from '../ui/PixelIcon.astro';
 
 interface Props {
   activeAppId?: string;
+  activeAppIds?: string[];
   class?: string;
 }
 
-const { activeAppId, class: className } = Astro.props;
+const { activeAppId, activeAppIds, class: className } = Astro.props;
 ---
 
 <footer class:list={['dock', className]} role="region" aria-label="Taskbar">
@@ -22,12 +23,14 @@ const { activeAppId, class: className } = Astro.props;
   <div class="dock__divider" aria-hidden="true"></div>
 
   <div class="dock__apps" role="toolbar" aria-label="Running applications">
-    {apps.map((app) => (
-      <DockButton
-        app={app}
-        isActive={activeAppId !== undefined ? activeAppId === app.id : app.defaultOpen}
-      />
-    ))}
+    {apps.map((app) => {
+      const isActive = activeAppIds
+        ? activeAppIds.includes(app.id)
+        : activeAppId !== undefined
+          ? activeAppId === app.id
+          : app.defaultOpen;
+      return <DockButton app={app} isActive={isActive} />;
+    })}
   </div>
 
   <div class="dock__tray" role="region" aria-label="System tray">

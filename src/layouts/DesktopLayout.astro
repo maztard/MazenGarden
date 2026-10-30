@@ -1,0 +1,55 @@
+---
+import { Font } from 'astro:assets';
+import DesktopDock from '../components/desktop/DesktopDock.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { withBase } from '../utils/url';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  activeAppId?: string;
+  activeAppIds?: string[];
+  noindex?: boolean;
+}
+
+const {
+  title = SITE_TITLE,
+  description = SITE_DESCRIPTION,
+  activeAppId,
+  activeAppIds,
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="MazenGarden RSS"
+      href={withBase('/rss.xml')}
+    />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <Font cssVariable="--font-dotemp" preload />
+    <Font cssVariable="--font-geist-pixel" preload />
+  </head>
+  <body class="desktop-body">
+    <a class="skip-link" href="#main">
+      Skip to content
+    </a>
+    <slot />
+    <DesktopDock activeAppId={activeAppId} activeAppIds={activeAppIds} />
+    <script src="../scripts/desktop.ts"></script>
+  </body>
+</html>
